@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.svg';
 
@@ -13,9 +13,15 @@ export default function ScrollTriggered() {
     }
   };
 
+  useEffect(() => {
+    // Automatically add another card if the last added card is even-indexed
+    if (index % 2 != 0 && index + 1 < food.length) {
+      handleAddCard();
+    }
+  }, [index]);
+
   return (
     <div style={container}>
-      <button onClick={handleAddCard}>Ugly temporary button</button>
       {/* Destructure text from the food array item */}
       {cards.map(([text, emoji, hueA, hueB], i) => (
         <Card 
