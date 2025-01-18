@@ -5,8 +5,10 @@ import vertexai
 from vertexai.preview import rag
 from vertexai.preview.generative_models import GenerativeModel, Tool, ChatSession
 from vertexai.preview.generative_models import SafetySetting, HarmCategory, HarmBlockThreshold
+from pathlib import Path
 
-load_dotenv()
+env_path = Path(__file__).parent.parent.parent / '.env'
+load_dotenv(env_path)
 
 # Set the Google Cloud credentials
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
