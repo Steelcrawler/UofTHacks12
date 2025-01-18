@@ -27,10 +27,11 @@ function Card({ emoji, hueA, hueB, i }) {
       </motion.div>
       <motion.div
         style={icon}
+        // variants={iconVariants}
         className="icon"
-        whileHover={hoverStyle}
-        whileTap={tapStyle}
-        whileDrag={dragStyle}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 1 }}
+        whileDrag={{ scale: 0.9, rotate: 10 }}
         drag
       />
     </motion.div>
