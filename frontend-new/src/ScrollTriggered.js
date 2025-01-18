@@ -249,12 +249,28 @@ function Card({ text, i, onSubmit }) {
               alignItems: "center", // Aligns the input and button vertically in the center
               gap: "10px", // Adds consistent spacing between the input and the button
             }}>
-              <input
-                type="text"
+              <textarea
                 value={inputText}
                 onChange={handleInputChange}
                 placeholder="Enter text"
-                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
+                style={{
+                  width: "300px", // Fixed width
+                  minHeight: "50px", // Minimum height
+                  fontSize: "18px", // Adjust the font size
+                  padding: "10px", // Space inside the textarea
+                  borderRadius: "8px", // Rounded corners
+                  border: "1px solid #ccc", // Border style
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Depth effect
+                  outline: "none", // Remove the default outline
+                  resize: "none", // Disable manual resizing (optional)
+                  overflow: "hidden", // Prevent scrollbars
+                  transition: "height 0.2s ease", // Smooth transition when expanding
+                }}
+                rows={1} // Initial row count
+                onInput={(e) => {
+                  e.target.style.height = "auto"; // Reset height to auto
+                  e.target.style.height = `${e.target.scrollHeight}px`; // Set height to scrollHeight (auto expansion)
+                }}
               />
               <motion.div
                 whileHover={{ scale: 1.2 }}
