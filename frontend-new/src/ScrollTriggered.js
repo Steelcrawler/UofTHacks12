@@ -41,6 +41,7 @@ export default function ScrollTriggered() {
 function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
   const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
   const [inputText, setInputText] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -48,9 +49,9 @@ function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
 
   const handleSubmit = () => {
     if (inputText !== "") {
-      console.log(`Card ${i}: Submitted text - "${inputText}"`); // Debugging log
-      onSubmit(); // Trigger the addition of a new card
-      setInputText(""); // Clear the input field
+      setSubmittedText(inputText);
+      onSubmit();
+      setInputText("");
     } else {
       alert("Please enter some text!");
     }
@@ -99,27 +100,39 @@ function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
             {text} {/* Odd-indexed cards directly show text */}
           </motion.span>
         ) : (
-          <div>
-            <input
-              type="text"
-              value={inputText}
-              onChange={handleInputChange}
-              placeholder="Enter text"
-              style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
-            />
-            <button
-              onClick={handleSubmit}
-              style={{
-                fontSize: "20px",
-                padding: "5px 10px",
-                cursor: "pointer",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            >
-              Submit
-            </button>
-          </div>
+          !submittedText ? (
+            <div>
+              <input
+                type="text"
+                value={inputText}
+                onChange={handleInputChange}
+                placeholder="Enter text"
+                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
+              />
+              <button
+                onClick={handleSubmit}
+                style={{
+                  fontSize: "20px",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+              >
+                Submit
+              </button>
+            </div>
+            ): (
+              // After submission, show the submitted text
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2, duration: 0.5 }}
+                style={{ fontSize: "64px", marginRight: "20px" }}
+              >
+                {submittedText} {/* Display the submitted text */}
+              </motion.span>
+            )
         )}
         <motion.span
           initial={{ opacity: 0, scale: 0 }}
