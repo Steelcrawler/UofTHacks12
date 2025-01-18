@@ -18,9 +18,9 @@ function App() {
   
   return (
     <div className="App">
-      <NavBar />
+      <NavBar onLoginClick={toggleLoginWindow} />
       <ScrollTriggered />
-      
+      {showLoginWindow && <LoginRegisterWindow onClose={closeLoginWindow} />}
     </div>
   )
 }

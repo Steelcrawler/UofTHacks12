@@ -1,0 +1,119 @@
+/* LoginRegisterWindow.css */
+
+/* Overlay to darken the background */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Card that will contain the form */
+  .card {
+    position: relative;
+    background-color: #fff;
+    padding: 30px;
+    width: 400px;
+    max-width: 90%;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* Card content section (for the title and form) */
+  .card-content {
+    margin-top: 20px;
+  }
+  
+  /* Close button */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    color: #007bff;
+  }
+  
+  /* Heading */
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Error message */
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  /* Form styling */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Submit button */
+  .submit-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+  }
+  
+  .submit-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Toggle links */
+  .toggle-register {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .toggle-link {
+    color: #007bff;
+    cursor: pointer;
+  }
+  
+  .toggle-link:hover {
+    text-decoration: underline;
+  }
+  
