@@ -1,11 +1,12 @@
 import React from 'react';
 import './NavBar.css';
-// import logo from './logo.svg'; // necessary?
+import logo from './logo.svg'; // necessary?
 
 function NavBar() {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
+        <img src={logo} className="navbar-logo-img" alt="logo" />
       </div>
       <ul className="navbar-links">
         <li><a href="#about">About</a></li>
