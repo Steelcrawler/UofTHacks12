@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import logo from './logo.svg';
 
 export default function ScrollTriggered() {
   return (
@@ -22,18 +23,56 @@ function Card({ emoji, hueA, hueB, i }) {
       viewport={{ amount: 0.8 }}
     >
       {/* <div style={{ ...splash, background }} /> */}
+      
+      <div>
+        {i % 2 != 0 ? (
+          <motion.div style={iconContainer} className="iconRightContainer">
+            <motion.div
+            style={icon}
+            className="iconRight"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 1 }}
+            whileDrag={{ scale: 0.9, rotate: 10 }}
+            drag
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+          style={iconWhite}
+          className="iconWhite"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 1 }}
+          whileDrag={{ scale: 0.9, rotate: 10 }}
+          drag
+        />
+        )}
+      </div>
       <motion.div style={card} variants={cardVariants} className="card">
         {emoji}
       </motion.div>
-      <motion.div
-        style={icon}
-        // variants={iconVariants}
-        className="icon"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 1 }}
-        whileDrag={{ scale: 0.9, rotate: 10 }}
-        drag
-      />
+      <div>
+        {i % 2 == 0 ? (
+          <motion.div style={iconContainer} className="iconRightContainer">
+            <motion.div
+            style={icon}
+            className="iconLeft"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 1 }}
+            whileDrag={{ scale: 0.9, rotate: 10 }}
+            drag
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+          style={iconWhite}
+          className="iconWhite"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 1 }}
+          whileDrag={{ scale: 0.9, rotate: 10 }}
+          drag
+        />
+        )}
+      </div>
     </motion.div>
   )
 }
@@ -72,6 +111,16 @@ const cardContainer = {
   marginBottom: -120,
 }
 
+const iconContainer = {
+  overflow: "hidden",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  position: "relative",
+  paddingTop: 20,
+  marginBottom: -120,
+}
+
 // const splash = {
 //   position: "absolute",
 //   top: 0,
@@ -99,9 +148,25 @@ const card = {
 }
 
 const icon = {
-  width: 100,
-  height: 100,
-  backgroundColor: "#3498db",
+  width: 80,
+  height: 80,
+  margin: 30,
+  backgroundColor: "green",
+  backgroundImage: `url(${logo})`,
+  backgroundSize: "cover", // Ensure the image covers the entire element
+  backgroundRepeat: "no-repeat", // Prevent repeating
+  backgroundPosition: "center",
+  borderRadius: "50%",
+  display: "flex-end",
+  justifyContent: "flex-end",
+  alignItems: "center",
+}
+
+const iconWhite = {
+  width: 80,
+  height: 80,
+  margin: 30,
+  backgroundColor: "#ffffff",
   borderRadius: "50%",
   display: "flex",
   justifyContent: "center",
