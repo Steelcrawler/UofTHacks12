@@ -23,13 +23,11 @@ export default function ScrollTriggered() {
   return (
     <div style={container}>
       {/* Destructure text from the food array item */}
-      {cards.map(([text, emoji, hueA, hueB], i) => (
+      {cards.map(([text, emoji], i) => (
         <Card 
           i={i} 
           text={text}    // Pass text as prop
           emoji={emoji} 
-          hueA={hueA} 
-          hueB={hueB} 
           key={emoji} 
           onSubmit={handleAddCard}
         />
@@ -38,8 +36,7 @@ export default function ScrollTriggered() {
   )
 }
 
-function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
-  const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
+function Card({ text, emoji, i, onSubmit }) {
   const [inputText, setInputText] = useState("");
   const [submittedText, setSubmittedText] = useState("");
 
@@ -185,8 +182,6 @@ const cardVariants = {
   },
 }
 
-const hue = (h) => `hsl(${h}, 100%, 50%)`
-
 const container = {
   margin: "100px auto",
   maxWidth: 1050,
@@ -267,12 +262,12 @@ const iconWhite = {
 }
 
 const food = [
-  ["Fresh", "🍅", 340, 10],
-  ["and", "🍊", 20, 40],
-  ["Tasty", "🍋", 60, 90],
-  ["Fruits", "🍐", 80, 120],
-  ["For", "🍏", 100, 140],
-  ["Your", "🫐", 205, 245],
-  ["Health", "🍆", 260, 290],
-  ["Today", "🍇", 290, 320],
+  ["Fresh", "🍅"],
+  ["and", "🍊"],
+  ["Tasty", "🍋"],
+  ["Fruits", "🍐"],
+  ["For", "🍏"],
+  ["Your", "🫐"],
+  ["Health", "🍆"],
+  ["Today", "🍇"],
 ]
