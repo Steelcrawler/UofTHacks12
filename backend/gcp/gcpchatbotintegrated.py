@@ -5,11 +5,13 @@ from dotenv import load_dotenv
 import vertexai
 from vertexai.preview import rag
 from vertexai.preview.generative_models import GenerativeModel, Tool, ChatSession, SafetySetting, HarmCategory, HarmBlockThreshold
+from pathlib import Path
 
 class RAGChatbot:
     def __init__(self):
         # Load environment variables
-        load_dotenv()
+        env_path = Path(__file__).parent.parent.parent / '.env'
+        load_dotenv(env_path)
         
         # Initialize Vertex AI settings
         self.project_id = os.getenv("PROJECT_ID")
@@ -20,13 +22,13 @@ class RAGChatbot:
         print("Initializing Vertex AI...")
         vertexai.init(project=self.project_id, location=self.location)
         
-                    # Initialize a default model for stance analysis with adjusted safety settings
+        # Initialize a default model for stance analysis with adjusted safety settings
         print("Setting up default model...")
         safety_settings=[
-                    SafetySetting(category=HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=HarmBlockThreshold.BLOCK_NONE),
-                    SafetySetting(category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold=HarmBlockThreshold.BLOCK_NONE),
-                    SafetySetting(category=HarmCategory.HARM_CATEGORY_HARASSMENT, threshold=HarmBlockThreshold.BLOCK_NONE),
-                    SafetySetting(category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold=HarmBlockThreshold.BLOCK_NONE)
+            SafetySetting(category=HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=HarmBlockThreshold.BLOCK_NONE),
+            SafetySetting(category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold=HarmBlockThreshold.BLOCK_NONE),
+            SafetySetting(category=HarmCategory.HARM_CATEGORY_HARASSMENT, threshold=HarmBlockThreshold.BLOCK_NONE),
+            SafetySetting(category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold=HarmBlockThreshold.BLOCK_NONE)
         ]
         self.default_model = GenerativeModel("gemini-1.5-flash-001", safety_settings=safety_settings)
         
@@ -200,49 +202,47 @@ class RAGChatbot:
             print(f"\nError getting response: {e}")
             return f"Error: {str(e)}"
 
-def run_chat_session():
-    """Run an interactive chat session"""
+class ChatSessionManager:
+    def __init__(self):
+        self.chatbot = RAGChatbot()
+        self.stream_enabled = True
+
+    def send_message(self, message: str) -> str:
+        if message.lower() == 'quit':
+            return "Ending chat session. Goodbye!"
+        elif message.lower() == 'stream off':
+            self.stream_enabled = False
+            return "Streaming disabled."
+        elif message.lower() == 'stream on':
+            self.stream_enabled = True
+            return "Streaming enabled."
+        else:
+            return self.chatbot.get_response(message, stream=self.stream_enabled)
+
+if __name__ == "__main__":
     try:
-        # Initialize the chatbot
+        # Initialize the chat session manager
         print("Initializing RAG chatbot...")
-        chatbot = RAGChatbot()
+        session_manager = ChatSessionManager()
         
         print("\nChat session started! Type 'quit' to exit.")
         print("Type 'stream off' to disable response streaming.")
         print("Type 'stream on' to enable response streaming.")
         
         # Chat loop
-        stream_enabled = True
         while True:
             # Get user input
             user_input = input("\nYou: ").strip()
             
-            # Check for exit command
-            if user_input.lower() == 'quit':
-                print("\nEnding chat session. Goodbye!")
-                break
-                
-            # Check for stream toggle
-            elif user_input.lower() == 'stream off':
-                stream_enabled = False
-                print("\nStreaming disabled.")
-                continue
-            elif user_input.lower() == 'stream on':
-                stream_enabled = True
-                print("\nStreaming enabled.")
-                continue
-            
             # Get and display response
-            if not stream_enabled:
-                response = chatbot.get_response(user_input, stream=False)
-                print(f"\nBot: {response}")
+            response = session_manager.send_message(user_input)
+            if response == "Ending chat session. Goodbye!":
+                print(response)
+                break
             else:
-                chatbot.get_response(user_input, stream=True)
+                print(f"\nBot: {response}")
 
     except KeyboardInterrupt:
         print("\n\nChat session interrupted. Goodbye!")
     except Exception as e:
         print(f"\nError in chat session: {e}")
-
-if __name__ == "__main__":
-    run_chat_session()
