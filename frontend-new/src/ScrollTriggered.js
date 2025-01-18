@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
-import logo from './logo.svg';
-import background from './background.png';
+import logo from './logo.png';
+import user from './user.svg';
+
 function SkeletonCard() {
   return (
     <motion.div
@@ -174,8 +175,8 @@ function Card({ text, i, onSubmit }) {
         {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconRight"
+              style={iconLeft}
+              className="iconLeft"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -259,8 +260,8 @@ function Card({ text, i, onSubmit }) {
         {i % 2 === 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconLeft"
+              style={iconRight}
+              className="iconRight"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -341,12 +342,29 @@ const card = {
   transformOrigin: "10% 60%",
 }
 
-const icon = {
+const iconLeft = {
   width: 50,
   height: 50,
   margin: 30,
-  backgroundColor: "green",
+  backgroundColor: "#add8e6",
   backgroundImage: `url(${logo})`,
+  backgroundSize: "cover", // Ensure the image covers the entire element
+  backgroundRepeat: "no-repeat", // Prevent repeating
+  backgroundPosition: "center",
+  borderRadius: "50%",
+  position: "relative", // Enable relative positioning
+  bottom: "35px",       // Elevate the icon a little bit by 10px
+  display: "flex",      // Flexbox for centering content inside
+  justifyContent: "center",  // Center content horizontally
+  alignItems: "center",
+}
+
+const iconRight = {
+  width: 50,
+  height: 50,
+  margin: 30,
+  backgroundColor: "#add8e6",
+  backgroundImage: `url(${user})`,
   backgroundSize: "cover", // Ensure the image covers the entire element
   backgroundRepeat: "no-repeat", // Prevent repeating
   backgroundPosition: "center",
