@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.png';
 import user from './user.svg';
+import submitButton from './submitButton.svg';
 
 function SkeletonCard() {
   return (
@@ -155,7 +156,7 @@ function Card({ text, i, onSubmit }) {
     if (inputText.trim() !== "") {
       // Create the JSON object
       const data = {
-        submittedText: inputText.trim(),
+        submittedText: inputText,
       };
   
       // Send the JSON object to the Flask endpoint
@@ -176,7 +177,7 @@ function Card({ text, i, onSubmit }) {
           console.log("Successfully submitted:", data);
   
           // Update the state to reflect the submission
-          setSubmittedText(inputText.trim());
+          setSubmittedText(inputText);
           onSubmit(); // Call the callback function if needed
           setInputText(""); // Clear the input
         })
@@ -242,26 +243,48 @@ function Card({ text, i, onSubmit }) {
           </motion.span>
         ) : (
           !submittedText ? (
-            <div>
-              <input
-                type="text"
+            <div 
+            style={{
+              display: "flex", // Makes the input and button appear side-by-side
+              alignItems: "center", // Aligns the input and button vertically in the center
+              gap: "10px", // Adds consistent spacing between the input and the button
+            }}>
+              <textarea
                 value={inputText}
                 onChange={handleInputChange}
                 placeholder="Enter text"
-                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
-              />
-              <button
-                onClick={handleSubmit}
                 style={{
-                  fontSize: "20px",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
+                  width: "300px", // Fixed width
+                  minHeight: "50px", // Minimum height
+                  fontSize: "18px", // Adjust the font size
+                  padding: "10px", // Space inside the textarea
+                  borderRadius: "8px", // Rounded corners
+                  border: "1px solid #ccc", // Border style
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Depth effect
+                  outline: "none", // Remove the default outline
+                  resize: "none", // Disable manual resizing (optional)
+                  overflow: "hidden", // Prevent scrollbars
+                  transition: "height 0.2s ease", // Smooth transition when expanding
                 }}
-              >
-                Submit
-              </button>
+                rows={1} // Initial row count
+                onInput={(e) => {
+                  e.target.style.height = "auto"; // Reset height to auto
+                  e.target.style.height = `${e.target.scrollHeight}px`; // Set height to scrollHeight (auto expansion)
+                }}
+              />
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.8 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  backgroundImage: `url(${submitButton})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  borderRadius: 5,
+                }}
+                onClick={handleSubmit}
+              />
             </div>
             ): (
               // After submission, show the submitted text
