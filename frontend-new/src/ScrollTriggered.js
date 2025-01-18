@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
-import logo from './logo.svg';
+import logo from './logo.png';
+import user from './user.svg';
+import submitButton from './submitButton.svg';
 
 function StreamingText({ text, delay, i }) {
   const [displayedText, setDisplayedText] = useState('');
@@ -222,12 +224,39 @@ function Card({ text, i, onSubmit }) {
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
-
   const handleSubmit = () => {
-    if (inputText !== "") {
-      setSubmittedText(inputText);
-      onSubmit();
-      setInputText("");
+    if (inputText.trim() !== "") {
+      // Create the JSON object
+      const data = {
+        submittedText: inputText,
+      };
+  
+      // Send the JSON object to the Flask endpoint
+      fetch("http://127.0.0.1:5000/endpointj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Successfully submitted:", data);
+  
+          // Update the state to reflect the submission
+          setSubmittedText(inputText);
+          onSubmit(); // Call the callback function if needed
+          setInputText(""); // Clear the input
+        })
+        .catch((error) => {
+          console.error("Error submitting data:", error);
+          alert("Failed to submit. Please try again.");
+        });
     } else {
       alert("Please enter some text!");
     }
@@ -252,8 +281,8 @@ function Card({ text, i, onSubmit }) {
         {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconRight"
+              style={iconLeft}
+              className="iconLeft"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -277,28 +306,49 @@ function Card({ text, i, onSubmit }) {
           <StreamingText text={text} i={i} />
         ) : (
           !submittedText ? (
-            // Input form remains unchanged
-            <div>
-              <input
-                type="text"
+            <div 
+            style={{
+              display: "flex", // Makes the input and button appear side-by-side
+              alignItems: "center", // Aligns the input and button vertically in the center
+              gap: "10px", // Adds consistent spacing between the input and the button
+            }}>
+              <textarea
                 value={inputText}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter text"
-                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
-              />
-              <button
-                onClick={handleSubmit}
                 style={{
-                  fontSize: "20px",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
+                  width: "300px", // Fixed width
+                  minHeight: "50px", // Minimum height
+                  fontSize: "18px", // Adjust the font size
+                  padding: "10px", // Space inside the textarea
+                  borderRadius: "8px", // Rounded corners
+                  border: "1px solid #ccc", // Border style
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Depth effect
+                  outline: "none", // Remove the default outline
+                  resize: "none", // Disable manual resizing (optional)
+                  overflow: "hidden", // Prevent scrollbars
+                  transition: "height 0.2s ease", // Smooth transition when expanding
                 }}
-              >
-                Submit
-              </button>
+                rows={1} // Initial row count
+                onInput={(e) => {
+                  e.target.style.height = "auto"; // Reset height to auto
+                  e.target.style.height = `${e.target.scrollHeight}px`; // Set height to scrollHeight (auto expansion)
+                }}
+              />
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.8 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  backgroundImage: `url(${submitButton})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  borderRadius: 5,
+                }}
+                onClick={handleSubmit}
+              />
             </div>
           ) : (
             // User submitted text - uses StreamingText
@@ -310,8 +360,8 @@ function Card({ text, i, onSubmit }) {
         {i % 2 === 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconLeft"
+              style={iconRight}
+              className="iconRight"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -425,12 +475,29 @@ const card = {
   transformOrigin: "10% 60%",
 }
 
-const icon = {
+const iconLeft = {
   width: 50,
   height: 50,
   margin: 30,
-  backgroundColor: "green",
+  backgroundColor: "#add8e6",
   backgroundImage: `url(${logo})`,
+  backgroundSize: "cover", // Ensure the image covers the entire element
+  backgroundRepeat: "no-repeat", // Prevent repeating
+  backgroundPosition: "center",
+  borderRadius: "50%",
+  position: "relative", // Enable relative positioning
+  bottom: "35px",       // Elevate the icon a little bit by 10px
+  display: "flex",      // Flexbox for centering content inside
+  justifyContent: "center",  // Center content horizontally
+  alignItems: "center",
+}
+
+const iconRight = {
+  width: 50,
+  height: 50,
+  margin: 30,
+  backgroundColor: "#add8e6",
+  backgroundImage: `url(${user})`,
   backgroundSize: "cover", // Ensure the image covers the entire element
   backgroundRepeat: "no-repeat", // Prevent repeating
   backgroundPosition: "center",
@@ -446,7 +513,7 @@ const iconWhite = {
   width: 50,
   height: 50,
   margin: 30,
-  backgroundColor: "#ffffff",
+  backgroundColor: "transparent",
   borderRadius: "50%",
   display: "flex",
   justifyContent: "center",
