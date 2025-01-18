@@ -4,14 +4,22 @@ import { motion } from 'framer-motion'
 export default function ScrollTriggered() {
   return (
     <div style={container}>
-      {food.map(([emoji, hueA, hueB], i) => (
-        <Card i={i} emoji={emoji} hueA={hueA} hueB={hueB} key={emoji} />
+            {/* Destructure text from the food array item */}
+            {food.map(([text, emoji, hueA, hueB], i) => (
+        <Card 
+          i={i} 
+          text={text}    // Pass text as prop
+          emoji={emoji} 
+          hueA={hueA} 
+          hueB={hueB} 
+          key={emoji} 
+        />
       ))}
     </div>
   )
 }
 
-function Card({ emoji, hueA, hueB, i }) {
+function Card({ text, emoji, hueA, hueB, i }) {
   const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
   return (
     <motion.div
@@ -23,7 +31,22 @@ function Card({ emoji, hueA, hueB, i }) {
     >
       <div style={{ ...splash, background }} />
       <motion.div style={card} variants={cardVariants} className="card">
-        {emoji}
+        <motion.span
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.2, duration: 0.5 }}
+          style={{ fontSize: '64px', marginRight: '20px' }}
+        >
+          {text}  {/* Now text will be properly defined */}
+        </motion.span>
+        <motion.span
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: i * 0.2 + 0.3, duration: 0.5 }}
+          style={{ fontSize: '164px' }}
+        >
+          {emoji}
+        </motion.span>
       </motion.div>
     </motion.div>
   )
@@ -89,12 +112,12 @@ const card = {
 }
 
 const food = [
-  ["🍅", 340, 10],
-  ["🍊", 20, 40],
-  ["🍋", 60, 90],
-  ["🍐", 80, 120],
-  ["🍏", 100, 140],
-  ["🫐", 205, 245],
-  ["🍆", 260, 290],
-  ["🍇", 290, 320],
+  ["Fresh", "🍅", 340, 10],
+  ["and", "🍊", 20, 40],
+  ["Tasty", "🍋", 60, 90],
+  ["Fruits", "🍐", 80, 120],
+  ["For", "🍏", 100, 140],
+  ["Your", "🫐", 205, 245],
+  ["Health", "🍆", 260, 290],
+  ["Today", "🍇", 290, 320],
 ]
