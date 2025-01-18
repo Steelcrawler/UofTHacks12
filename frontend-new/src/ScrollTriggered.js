@@ -151,16 +151,44 @@ function Card({ text, i, onSubmit }) {
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
-
   const handleSubmit = () => {
-    if (inputText !== "") {
-      setSubmittedText(inputText);
-      onSubmit();
-      setInputText("");
+    if (inputText.trim() !== "") {
+      // Create the JSON object
+      const data = {
+        submittedText: inputText.trim(),
+      };
+  
+      // Send the JSON object to the Flask endpoint
+      fetch("http://127.0.0.1:5000/endpointj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Successfully submitted:", data);
+  
+          // Update the state to reflect the submission
+          setSubmittedText(inputText.trim());
+          onSubmit(); // Call the callback function if needed
+          setInputText(""); // Clear the input
+        })
+        .catch((error) => {
+          console.error("Error submitting data:", error);
+          alert("Failed to submit. Please try again.");
+        });
     } else {
       alert("Please enter some text!");
     }
   };
+  
   return (
     <motion.div
       className={`card-container-${i}`}
