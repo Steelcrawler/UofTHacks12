@@ -1,8 +1,44 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from mongodb_interface import MongoDBInterface
 
 app = Flask(__name__)
 CORS(app)
+
+
+# Initialize MongoDBInterface
+mongo_interface = MongoDBInterface()
+
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    # Call create_user method to register the user
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+    
+    if mongo_interface.create_user(email, password):
+        return jsonify({"message": "User created successfully"}), 200
+    else:
+        return jsonify({"message": "Email already exists or invalid email"}), 400
+
+
+@app.route('/api/login', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    # Call verify_user method to check credentials
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
+    if mongo_interface.verify_user(email, password):
+        return jsonify({"message": "Login successful"}), 200
+    else:
+        return jsonify({"message": "Invalid email or password"}), 401
 
 @app.route('/')
 def home():
