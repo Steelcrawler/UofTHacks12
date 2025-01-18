@@ -1,16 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.svg';
+function SkeletonCard() {
+  return (
+    <motion.div
+      style={cardContainer}
+      initial="offscreen"
+      animate="onscreen"
+      viewport={{ amount: 0.8 }}
+    >
+      <div>
+        <motion.div 
+          style={iconWhite}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="w-20 h-20 rounded-full"
+            style={{ background: '#d1d5db' }}  // Changed to gray-300
+            animate={{
+              opacity: [0.7, 1, 0.7],
+              scale: [0.98, 1, 0.98]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
+      </div>
+
+      <motion.div 
+        style={{
+          ...card,
+          background: '#e5e7eb',  // Changed to gray-200
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          padding: '2rem'
+        }}
+        variants={cardVariants}
+      >
+        <motion.div 
+          className="h-16 w-48 rounded-lg"
+          style={{ background: '#9ca3af' }}  // Changed to gray-400
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            x: [0, 2, 0]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <motion.div 
+          className="h-40 w-40 rounded-full"
+          style={{ background: '#9ca3af' }}  // Changed to gray-400
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            scale: [0.98, 1, 0.98]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.3
+          }}
+        />
+      </motion.div>
+
+      <div>
+        <motion.div 
+          style={iconWhite}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="w-20 h-20 rounded-full"
+            style={{ background: '#d1d5db' }}  // Changed to gray-300
+            animate={{
+              opacity: [0.7, 1, 0.7],
+              scale: [0.98, 1, 0.98]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.6
+            }}
+          />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function ScrollTriggered() {
   const [cards, setCards] = useState([food[0]]);
   const [index, setIndex] = useState(0);
-
-  const handleAddCard = () => {
-    if (index + 1 < food.length) {
-      setCards((prev) => [...prev, food[index + 1]]);
-      setIndex(index + 1);
-    }
+  const [isLoading, setIsLoading] = useState(false);
+  const handleAddCard = async () => {
+    if (index + 1 >= food.length) return;
+    
+    setIsLoading(true);
+    console.log('Setting loading to true'); // Debug log
+    
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setCards(prev => [...prev, food[index + 1]]);
+    setIndex(prev => prev + 1);
+    setIsLoading(false);
+    console.log('Setting loading to false'); // Debug log
   };
 
   useEffect(() => {
@@ -19,14 +126,12 @@ export default function ScrollTriggered() {
       handleAddCard();
     }
   }, [index]);
-
   return (
     <div style={container}>
-      {/* Destructure text from the food array item */}
       {cards.map(([text, emoji, hueA, hueB], i) => (
         <Card 
           i={i} 
-          text={text}    // Pass text as prop
+          text={text}
           emoji={emoji} 
           hueA={hueA} 
           hueB={hueB} 
@@ -34,8 +139,9 @@ export default function ScrollTriggered() {
           onSubmit={handleAddCard}
         />
       ))}
+      {isLoading && <SkeletonCard />}
     </div>
-  )
+  );
 }
 
 function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
