@@ -155,7 +155,7 @@ function Card({ text, i, onSubmit }) {
     if (inputText.trim() !== "") {
       // Create the JSON object
       const data = {
-        submittedText: inputText.trim(),
+        submittedText: inputText,
       };
   
       // Send the JSON object to the Flask endpoint
@@ -176,7 +176,7 @@ function Card({ text, i, onSubmit }) {
           console.log("Successfully submitted:", data);
   
           // Update the state to reflect the submission
-          setSubmittedText(inputText.trim());
+          setSubmittedText(inputText);
           onSubmit(); // Call the callback function if needed
           setInputText(""); // Clear the input
         })

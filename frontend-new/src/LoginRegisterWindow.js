@@ -37,7 +37,7 @@ const LoginRegisterWindow = ({ onClose }) => {
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="card"
+        className="login-register-card"
         initial="hidden"
         animate="visible"
         variants={cardVariants}

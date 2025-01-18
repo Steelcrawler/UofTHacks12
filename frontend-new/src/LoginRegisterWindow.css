@@ -15,7 +15,7 @@
   }
   
   /* Card that will contain the form */
-  .card {
+  .login-register-card {
     position: relative;
     background-color: #fff;
     padding: 30px;
