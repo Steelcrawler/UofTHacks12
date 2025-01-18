@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.svg';
+import background from './background.png';
 function SkeletonCard() {
   return (
     <motion.div
@@ -361,7 +362,7 @@ const iconWhite = {
   width: 50,
   height: 50,
   margin: 30,
-  backgroundColor: "#ffffff",
+  backgroundColor: "transparent",
   borderRadius: "50%",
   display: "flex",
   justifyContent: "center",
