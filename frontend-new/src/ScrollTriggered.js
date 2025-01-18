@@ -4,6 +4,78 @@ import logo from './logo.png';
 import user from './user.svg';
 import submitButton from './submitButton.svg';
 
+function StreamingText({ text, delay, i }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isComplete, setIsComplete] = useState(false);
+  const containerRef = React.useRef(null);
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedText('');
+    setIsComplete(false);
+    let isMounted = true;
+
+    const streamText = async () => {
+      while (index < text.length && isMounted) {
+        await new Promise(resolve => setTimeout(resolve, 30));
+        if (isMounted) {
+          setDisplayedText(text.substring(0, index + 1));
+          index++;
+        }
+      }
+      if (isMounted) {
+        setIsComplete(true);
+      }
+    };
+
+    streamText();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [text]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      // Smooth scroll to bottom
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [displayedText]);
+
+  return (
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: i * 0.2, duration: 0.5 }}
+      style={{
+        fontSize: "20px",
+        marginRight: "20px",
+        display: "inline-block",   
+        textAlign: "left",          
+        verticalAlign: "top",  
+        width: "500px",
+        padding: "30px",
+        maxHeight: "300px",
+        overflowY: "auto",
+        overflowX: "hidden",
+        scrollbarWidth: "thin",
+        scrollbarColor: "#888 #f5f5f5",
+        whiteSpace: "pre-wrap",  // Preserve formatting
+        wordBreak: "break-word"  // Prevent horizontal overflow
+      }}
+      className="streaming-text-container"
+    >
+      {displayedText}
+      {!isComplete && <span className="typing-cursor">▋</span>}
+    </motion.div>
+  );
+}
+
 function SkeletonCard() {
   return (
     <motion.div
@@ -189,6 +261,13 @@ function Card({ text, i, onSubmit }) {
       alert("Please enter some text!");
     }
   };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
   
   return (
     <motion.div
@@ -198,8 +277,6 @@ function Card({ text, i, onSubmit }) {
       whileInView="onscreen"
       viewport={{ amount: 0.8 }}
     >
-      {/* <div style={{ ...splash, background }} /> */}
-      
       <div>
         {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
@@ -225,22 +302,8 @@ function Card({ text, i, onSubmit }) {
       </div>
       <motion.div style={card} variants={cardVariants} className="card">
         {i % 2 !== 0 ? (
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2, duration: 0.5 }}
-            style={{
-              fontSize: "20px",
-              marginRight: "20px",
-              display: "inline-block",   
-              textAlign: "left",          
-              verticalAlign: "top",  
-              width: "500px",
-              padding: "30px",
-            }}
-          >
-            {text} {/* Odd-indexed cards directly show text */}
-          </motion.span>
+          // Bot response - uses StreamingText
+          <StreamingText text={text} i={i} />
         ) : (
           !submittedText ? (
             <div 
@@ -252,6 +315,7 @@ function Card({ text, i, onSubmit }) {
               <textarea
                 value={inputText}
                 onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Enter text"
                 style={{
                   width: "300px", // Fixed width
@@ -286,25 +350,10 @@ function Card({ text, i, onSubmit }) {
                 onClick={handleSubmit}
               />
             </div>
-            ): (
-              // After submission, show the submitted text
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.2, duration: 0.5 }}
-                style={{
-                  fontSize: "20px",
-                  marginRight: "20px",
-                  display: "inline-block",   
-                  textAlign: "left",          
-                  verticalAlign: "top",  
-                  width: "500px",  
-                  padding: "30px", 
-                }}
-              >
-                {submittedText} {/* Display the submitted text */}
-              </motion.span>
-            )
+          ) : (
+            // User submitted text - uses StreamingText
+            <StreamingText text={submittedText} i={i} />
+          )
         )}
       </motion.div>
       <div>
@@ -331,8 +380,41 @@ function Card({ text, i, onSubmit }) {
         )}
       </div>
     </motion.div>
-  )
+  );
 }
+
+const inputContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  width: '80%',
+  padding: '20px',
+};
+
+const textareaStyle = {
+  width: '100%',
+  minHeight: '100px',
+  padding: '12px',
+  fontSize: '16px',
+  borderRadius: '8px',
+  border: '1px solid #ccc',
+  resize: 'vertical',
+  fontFamily: 'inherit',
+};
+
+const submitButtonStyle = {
+  padding: '12px 24px',
+  fontSize: '16px',
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s',
+  ':hover': {
+    backgroundColor: '#45a049',
+  },
+};
 
 const cardVariants = {
   offscreen: {
@@ -439,12 +521,45 @@ const iconWhite = {
 }
 
 const food = [
-  ["Fresh"],
-  ["and"],
-  ["Tasty"],
-  ["Fruits"],
-  ["For"],
-  ["Your"],
-  ["Health"],
-  ["Today"],
-]
+  ["Hello! I am an AI assistant ready to help you with your questions. I can provide detailed explanations and engage in meaningful discussions about various topics."],
+  ["Thank you for your message. Let me provide a comprehensive response that will demonstrate the scrolling functionality. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."],
+  ["I understand your question completely. Let me break it down into several key points and provide a detailed analysis. First, we should consider the fundamental aspects of the topic. Then, we can explore its practical applications and implications. This requires a thorough examination of various factors and their interrelationships..."],
+  ["Excellent point! Let me elaborate on that with some concrete examples and detailed explanations..."],
+];
+
+const cssStyles = `
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    animation: blink 1s infinite;
+    margin-left: 4px;
+  }
+
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .streaming-text-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = cssStyles;
+document.head.appendChild(styleSheet);
