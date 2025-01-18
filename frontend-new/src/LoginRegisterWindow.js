@@ -15,7 +15,7 @@ const LoginRegisterWindow = ({ onClose }) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit =  (e) => {
     e.preventDefault();
 
     if (isRegistering && password !== confirmPassword) {
@@ -28,18 +28,19 @@ const LoginRegisterWindow = ({ onClose }) => {
         ? 'http://127.0.0.1:5000/api/register'  // Register endpoint
         : 'http://127.0.0.1:5000/api/login';    // Login endpoint
 
-      try {
-        const response = await axios.post(url, { email, password });
-        if (response.status === 200) {
-          console.log('Form submitted:', { email, password });
-          onClose(); // Close the modal on successful submission
-        } else {
-          setError(response.data.message);  // Display error message from backend
-        }
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        setError('Something went wrong');  // Display a generic error message
-      }
+        axios.post(url, { email, password })
+        .then((response) => {
+          if (response.status === 200) {
+            console.log('Form submitted:', { email, password });
+            onClose(); // Close the modal on successful submission
+          } else {
+            setError(response.data.message);  // Display error message from backend
+          }
+        })
+        .catch((error) => {
+          console.error('Error submitting form:', error);
+          setError('Something went wrong');  // Display a generic error message
+        });
     }
   };
 
