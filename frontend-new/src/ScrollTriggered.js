@@ -35,7 +35,7 @@ const cardVariants = {
   },
   onscreen: {
     y: 50,
-    rotate: -10,
+    rotate: 0,
     transition: {
       type: "spring",
       bounce: 0.4,
@@ -48,7 +48,7 @@ const hue = (h) => `hsl(${h}, 100%, 50%)`
 
 const container = {
   margin: "100px auto",
-  maxWidth: 500,
+  maxWidth: 1050,
   paddingBottom: 100,
   width: "100%",
 }
@@ -74,13 +74,15 @@ const splash = {
 
 const card = {
   fontSize: 164,
-  width: 300,
-  height: 430,
+  width: 900,
+  height: 330,
+  marginBottom: 120,
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   borderRadius: 20,
   background: "#f5f5f5",
+  transform: "rotate(30deg)",
   boxShadow:
     "0 0 1px hsl(0deg 0% 0% / 0.075), 0 0 2px hsl(0deg 0% 0% / 0.075), 0 0 4px hsl(0deg 0% 0% / 0.075), 0 0 8px hsl(0deg 0% 0% / 0.075), 0 0 16px hsl(0deg 0% 0% / 0.075)",
   transformOrigin: "10% 60%",
