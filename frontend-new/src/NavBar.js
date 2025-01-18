@@ -1,6 +1,6 @@
 import React from 'react';
 import './NavBar.css';
-import logo from './logo.svg'; // necessary?
+import logo from './logo.png'; // necessary?
 
 function NavBar() {
   return (

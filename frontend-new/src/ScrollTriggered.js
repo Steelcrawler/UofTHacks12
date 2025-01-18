@@ -1,43 +1,165 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
-import logo from './logo.svg';
+import logo from './logo.png';
+import user from './user.svg';
+
+function SkeletonCard() {
+  return (
+    <motion.div
+      style={cardContainer}
+      initial="offscreen"
+      animate="onscreen"
+      viewport={{ amount: 0.8 }}
+    >
+      <div>
+        <motion.div 
+          style={iconWhite}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="w-20 h-20 rounded-full"
+            style={{ background: '#d1d5db' }}  // Changed to gray-300
+            animate={{
+              opacity: [0.7, 1, 0.7],
+              scale: [0.98, 1, 0.98]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
+      </div>
+
+      <motion.div 
+        style={{
+          ...card,
+          background: '#e5e7eb',  // Changed to gray-200
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '2rem',
+          padding: '2rem'
+        }}
+        variants={cardVariants}
+      >
+        <motion.div 
+          className="h-16 w-48 rounded-lg"
+          style={{ background: '#9ca3af' }}  // Changed to gray-400
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            x: [0, 2, 0]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <motion.div 
+          className="h-40 w-40 rounded-full"
+          style={{ background: '#9ca3af' }}  // Changed to gray-400
+          animate={{
+            opacity: [0.7, 1, 0.7],
+            scale: [0.98, 1, 0.98]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.3
+          }}
+        />
+      </motion.div>
+
+      <div>
+        <motion.div 
+          style={iconWhite}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="w-20 h-20 rounded-full"
+            style={{ background: '#d1d5db' }}  // Changed to gray-300
+            animate={{
+              opacity: [0.7, 1, 0.7],
+              scale: [0.98, 1, 0.98]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.6
+            }}
+          />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function ScrollTriggered() {
   const [cards, setCards] = useState([food[0]]);
   const [index, setIndex] = useState(0);
-
-  const handleSubmit = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleAddCard = async () => {
+    if (index + 1 >= food.length) return;
+    
+    setIsLoading(true);
+    console.log('Setting loading to true'); // Debug log
+    
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
     setCards(prev => [...prev, food[index + 1]]);
-    setIndex(index + 1);
-  }
+    setIndex(prev => prev + 1);
+    setIsLoading(false);
+    console.log('Setting loading to false'); // Debug log
+  };
 
+  useEffect(() => {
+    // Automatically add another card if the last added card is even-indexed
+    if (index % 2 != 0 && index + 1 < food.length) {
+      handleAddCard();
+    }
+  }, [index]);
   return (
     <div style={container}>
-      <button onClick={handleSubmit}>Ugly temporary button</button>
       {/* Destructure text from the food array item */}
-      {cards.map(([text, emoji, hueA, hueB], i) => (
+      {cards.map(([text], i) => (
         <Card 
           i={i} 
-          text={text}    // Pass text as prop
-          emoji={emoji} 
-          hueA={hueA} 
-          hueB={hueB} 
-          key={emoji} 
+          text={text}
+          key={i} 
+          onSubmit={handleAddCard}
         />
       ))}
+      {isLoading && <SkeletonCard />}
     </div>
-  )
+  );
 }
 
-function Card({ text, emoji, hueA, hueB, i }) {
-  const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
+function Card({ text, i, onSubmit }) {
   const [inputText, setInputText] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
+
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
 
   const handleSubmit = () => {
-    alert(`Submitted: ${inputText}`); // Replace this with actual functionality if needed
+    if (inputText !== "") {
+      setSubmittedText(inputText);
+      onSubmit();
+      setInputText("");
+    } else {
+      alert("Please enter some text!");
+    }
   };
   return (
     <motion.div
@@ -53,8 +175,8 @@ function Card({ text, emoji, hueA, hueB, i }) {
         {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconRight"
+              style={iconLeft}
+              className="iconLeft"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -78,48 +200,68 @@ function Card({ text, emoji, hueA, hueB, i }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.2, duration: 0.5 }}
-            style={{ fontSize: "64px", marginRight: "20px" }}
+            style={{
+              fontSize: "20px",
+              marginRight: "20px",
+              display: "inline-block",   
+              textAlign: "left",          
+              verticalAlign: "top",  
+              width: "500px",
+              padding: "30px",
+            }}
           >
             {text} {/* Odd-indexed cards directly show text */}
           </motion.span>
         ) : (
-          <div>
-            <input
-              type="text"
-              value={inputText}
-              onChange={handleInputChange}
-              placeholder="Enter text"
-              style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
-            />
-            <button
-              onClick={handleSubmit}
-              style={{
-                fontSize: "20px",
-                padding: "5px 10px",
-                cursor: "pointer",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            >
-              Submit
-            </button>
-          </div>
+          !submittedText ? (
+            <div>
+              <input
+                type="text"
+                value={inputText}
+                onChange={handleInputChange}
+                placeholder="Enter text"
+                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
+              />
+              <button
+                onClick={handleSubmit}
+                style={{
+                  fontSize: "20px",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+              >
+                Submit
+              </button>
+            </div>
+            ): (
+              // After submission, show the submitted text
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2, duration: 0.5 }}
+                style={{
+                  fontSize: "20px",
+                  marginRight: "20px",
+                  display: "inline-block",   
+                  textAlign: "left",          
+                  verticalAlign: "top",  
+                  width: "500px",  
+                  padding: "30px", 
+                }}
+              >
+                {submittedText} {/* Display the submitted text */}
+              </motion.span>
+            )
         )}
-        <motion.span
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.2 + 0.3, duration: 0.5 }}
-          style={{ fontSize: "164px" }}
-        >
-          {emoji}
-        </motion.span>
       </motion.div>
       <div>
         {i % 2 === 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-              style={icon}
-              className="iconLeft"
+              style={iconRight}
+              className="iconRight"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 1 }}
               whileDrag={{ scale: 0.9, rotate: 10 }}
@@ -156,8 +298,6 @@ const cardVariants = {
   },
 }
 
-const hue = (h) => `hsl(${h}, 100%, 50%)`
-
 const container = {
   margin: "100px auto",
   maxWidth: 1050,
@@ -185,20 +325,11 @@ const iconContainer = {
   marginBottom: -120,
 }
 
-// const splash = {
-//   position: "absolute",
-//   top: 0,
-//   left: 0,
-//   right: 0,
-//   bottom: 0,
-//   clipPath: `path("M 0 403.5 L 1500 303.5 L 800 500 L 0 500 Z")`
-//   // `path("M 0 303.5 C 0 292.454 8.995 285.101 20 283.5 L 460 219.5 C 470.085 218.033 480 228.454 480 239.5 L 500 430 C 500 441.046 491.046 450 480 450 L 20 450 C 8.954 450 0 441.046 0 430 Z")`,
-// }
-
 const card = {
   fontSize: 164,
   minWidth: 800,   
   height: "auto",
+  minHeight: 150,
   marginBottom: 120,
   display: "flex",
   justifyContent: "center",
@@ -211,26 +342,45 @@ const card = {
   transformOrigin: "10% 60%",
 }
 
-const icon = {
-  width: 80,
-  height: 80,
+const iconLeft = {
+  width: 50,
+  height: 50,
   margin: 30,
-  backgroundColor: "green",
+  backgroundColor: "#add8e6",
   backgroundImage: `url(${logo})`,
   backgroundSize: "cover", // Ensure the image covers the entire element
   backgroundRepeat: "no-repeat", // Prevent repeating
   backgroundPosition: "center",
   borderRadius: "50%",
-  display: "flex-end",
-  justifyContent: "flex-end",
+  position: "relative", // Enable relative positioning
+  bottom: "35px",       // Elevate the icon a little bit by 10px
+  display: "flex",      // Flexbox for centering content inside
+  justifyContent: "center",  // Center content horizontally
+  alignItems: "center",
+}
+
+const iconRight = {
+  width: 50,
+  height: 50,
+  margin: 30,
+  backgroundColor: "#add8e6",
+  backgroundImage: `url(${user})`,
+  backgroundSize: "cover", // Ensure the image covers the entire element
+  backgroundRepeat: "no-repeat", // Prevent repeating
+  backgroundPosition: "center",
+  borderRadius: "50%",
+  position: "relative", // Enable relative positioning
+  bottom: "35px",       // Elevate the icon a little bit by 10px
+  display: "flex",      // Flexbox for centering content inside
+  justifyContent: "center",  // Center content horizontally
   alignItems: "center",
 }
 
 const iconWhite = {
-  width: 80,
-  height: 80,
+  width: 50,
+  height: 50,
   margin: 30,
-  backgroundColor: "#ffffff",
+  backgroundColor: "transparent",
   borderRadius: "50%",
   display: "flex",
   justifyContent: "center",
@@ -238,12 +388,12 @@ const iconWhite = {
 }
 
 const food = [
-  ["Fresh", "🍅", 340, 10],
-  ["and", "🍊", 20, 40],
-  ["Tasty", "🍋", 60, 90],
-  ["Fruits", "🍐", 80, 120],
-  ["For", "🍏", 100, 140],
-  ["Your", "🫐", 205, 245],
-  ["Health", "🍆", 260, 290],
-  ["Today", "🍇", 290, 320],
+  ["Fresh"],
+  ["and"],
+  ["Tasty"],
+  ["Fruits"],
+  ["For"],
+  ["Your"],
+  ["Health"],
+  ["Today"],
 ]
