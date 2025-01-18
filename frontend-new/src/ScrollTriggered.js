@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.svg';
 
 export default function ScrollTriggered() {
+  const [cards, setCards] = useState([food[0]]);
+  const [index, setIndex] = useState(0);
+
+  const handleSubmit = () => {
+    setCards(prev => [...prev, food[index + 1]]);
+    setIndex(index + 1);
+  }
+
   return (
     <div style={container}>
-            {/* Destructure text from the food array item */}
-            {food.map(([text, emoji, hueA, hueB], i) => (
+      <button onClick={handleSubmit}>Ugly temporary button</button>
+      {/* Destructure text from the food array item */}
+      {cards.map(([text, emoji, hueA, hueB], i) => (
         <Card 
           i={i} 
           text={text}    // Pass text as prop
