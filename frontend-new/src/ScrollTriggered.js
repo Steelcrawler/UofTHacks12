@@ -128,13 +128,12 @@ export default function ScrollTriggered() {
   }, [index]);
   return (
     <div style={container}>
-      {cards.map(([text, emoji, hueA, hueB], i) => (
+      {/* Destructure text from the food array item */}
+      {cards.map(([text, emoji], i) => (
         <Card 
           i={i} 
           text={text}
           emoji={emoji} 
-          hueA={hueA} 
-          hueB={hueB} 
           key={emoji} 
           onSubmit={handleAddCard}
         />
@@ -144,9 +143,9 @@ export default function ScrollTriggered() {
   );
 }
 
-function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
-  const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
+function Card({ text, emoji, i, onSubmit }) {
   const [inputText, setInputText] = useState("");
+  const [submittedText, setSubmittedText] = useState("");
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
@@ -154,9 +153,9 @@ function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
 
   const handleSubmit = () => {
     if (inputText !== "") {
-      console.log(`Card ${i}: Submitted text - "${inputText}"`); // Debugging log
-      onSubmit(); // Trigger the addition of a new card
-      setInputText(""); // Clear the input field
+      setSubmittedText(inputText);
+      onSubmit();
+      setInputText("");
     } else {
       alert("Please enter some text!");
     }
@@ -205,27 +204,39 @@ function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
             {text} {/* Odd-indexed cards directly show text */}
           </motion.span>
         ) : (
-          <div>
-            <input
-              type="text"
-              value={inputText}
-              onChange={handleInputChange}
-              placeholder="Enter text"
-              style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
-            />
-            <button
-              onClick={handleSubmit}
-              style={{
-                fontSize: "20px",
-                padding: "5px 10px",
-                cursor: "pointer",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            >
-              Submit
-            </button>
-          </div>
+          !submittedText ? (
+            <div>
+              <input
+                type="text"
+                value={inputText}
+                onChange={handleInputChange}
+                placeholder="Enter text"
+                style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
+              />
+              <button
+                onClick={handleSubmit}
+                style={{
+                  fontSize: "20px",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  borderRadius: "5px",
+                  border: "1px solid #ccc",
+                }}
+              >
+                Submit
+              </button>
+            </div>
+            ): (
+              // After submission, show the submitted text
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.2, duration: 0.5 }}
+                style={{ fontSize: "64px", marginRight: "20px" }}
+              >
+                {submittedText} {/* Display the submitted text */}
+              </motion.span>
+            )
         )}
         <motion.span
           initial={{ opacity: 0, scale: 0 }}
@@ -277,8 +288,6 @@ const cardVariants = {
     },
   },
 }
-
-const hue = (h) => `hsl(${h}, 100%, 50%)`
 
 const container = {
   margin: "100px auto",
@@ -360,12 +369,12 @@ const iconWhite = {
 }
 
 const food = [
-  ["Fresh", "🍅", 340, 10],
-  ["and", "🍊", 20, 40],
-  ["Tasty", "🍋", 60, 90],
-  ["Fruits", "🍐", 80, 120],
-  ["For", "🍏", 100, 140],
-  ["Your", "🫐", 205, 245],
-  ["Health", "🍆", 260, 290],
-  ["Today", "🍇", 290, 320],
+  ["Fresh", "🍅"],
+  ["and", "🍊"],
+  ["Tasty", "🍋"],
+  ["Fruits", "🍐"],
+  ["For", "🍏"],
+  ["Your", "🫐"],
+  ["Health", "🍆"],
+  ["Today", "🍇"],
 ]
