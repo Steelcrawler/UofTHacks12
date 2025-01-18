@@ -31,6 +31,14 @@ export default function ScrollTriggered() {
 
 function Card({ text, emoji, hueA, hueB, i }) {
   const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
+  const [inputText, setInputText] = useState("");
+  const handleInputChange = (e) => {
+    setInputText(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    alert(`Submitted: ${inputText}`); // Replace this with actual functionality if needed
+  };
   return (
     <motion.div
       className={`card-container-${i}`}
@@ -42,67 +50,91 @@ function Card({ text, emoji, hueA, hueB, i }) {
       {/* <div style={{ ...splash, background }} /> */}
       
       <div>
-        {i % 2 != 0 ? (
+        {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-            style={icon}
-            className="iconRight"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 1 }}
-            whileDrag={{ scale: 0.9, rotate: 10 }}
-            drag
+              style={icon}
+              className="iconRight"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 1 }}
+              whileDrag={{ scale: 0.9, rotate: 10 }}
+              drag
             />
           </motion.div>
         ) : (
           <motion.div
-          style={iconWhite}
-          className="iconWhite"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 1 }}
-          whileDrag={{ scale: 0.9, rotate: 10 }}
-          drag
-        />
+            style={iconWhite}
+            className="iconWhite"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 1 }}
+            whileDrag={{ scale: 0.9, rotate: 10 }}
+            drag
+          />
         )}
       </div>
       <motion.div style={card} variants={cardVariants} className="card">
-        <motion.span
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.2, duration: 0.5 }}
-          style={{ fontSize: '64px', marginRight: '20px' }}
-        >
-          {text}  {/* Now text will be properly defined */}
-        </motion.span>
+        {i % 2 !== 0 ? (
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.2, duration: 0.5 }}
+            style={{ fontSize: "64px", marginRight: "20px" }}
+          >
+            {text} {/* Odd-indexed cards directly show text */}
+          </motion.span>
+        ) : (
+          <div>
+            <input
+              type="text"
+              value={inputText}
+              onChange={handleInputChange}
+              placeholder="Enter text"
+              style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
+            />
+            <button
+              onClick={handleSubmit}
+              style={{
+                fontSize: "20px",
+                padding: "5px 10px",
+                cursor: "pointer",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+              }}
+            >
+              Submit
+            </button>
+          </div>
+        )}
         <motion.span
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: i * 0.2 + 0.3, duration: 0.5 }}
-          style={{ fontSize: '164px' }}
+          style={{ fontSize: "164px" }}
         >
           {emoji}
         </motion.span>
       </motion.div>
       <div>
-        {i % 2 == 0 ? (
+        {i % 2 === 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
             <motion.div
-            style={icon}
-            className="iconLeft"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 1 }}
-            whileDrag={{ scale: 0.9, rotate: 10 }}
-            drag
+              style={icon}
+              className="iconLeft"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 1 }}
+              whileDrag={{ scale: 0.9, rotate: 10 }}
+              drag
             />
           </motion.div>
         ) : (
           <motion.div
-          style={iconWhite}
-          className="iconWhite"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 1 }}
-          whileDrag={{ scale: 0.9, rotate: 10 }}
-          drag
-        />
+            style={iconWhite}
+            className="iconWhite"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 1 }}
+            whileDrag={{ scale: 0.9, rotate: 10 }}
+            drag
+          />
         )}
       </div>
     </motion.div>
