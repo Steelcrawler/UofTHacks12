@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.png';
 import user from './user.svg';
+import submitButton from './submitButton.svg';
 
 function SkeletonCard() {
   return (
@@ -242,7 +243,12 @@ function Card({ text, i, onSubmit }) {
           </motion.span>
         ) : (
           !submittedText ? (
-            <div>
+            <div 
+            style={{
+              display: "flex", // Makes the input and button appear side-by-side
+              alignItems: "center", // Aligns the input and button vertically in the center
+              gap: "10px", // Adds consistent spacing between the input and the button
+            }}>
               <input
                 type="text"
                 value={inputText}
@@ -250,18 +256,19 @@ function Card({ text, i, onSubmit }) {
                 placeholder="Enter text"
                 style={{ marginRight: "10px", fontSize: "20px", padding: "5px" }}
               />
-              <button
-                onClick={handleSubmit}
+              <motion.div
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.8 }}
                 style={{
-                  fontSize: "20px",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
+                  width: 40,
+                  height: 40,
+                  backgroundImage: `url(${submitButton})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  borderRadius: 5,
                 }}
-              >
-                Submit
-              </button>
+                onClick={handleSubmit}
+              />
             </div>
             ): (
               // After submission, show the submitted text

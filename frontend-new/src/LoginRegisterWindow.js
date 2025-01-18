@@ -9,7 +9,7 @@ const LoginRegisterWindow = ({ onClose }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  const cardVariants = {
+  const loginRegisterCardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
@@ -40,10 +40,10 @@ const LoginRegisterWindow = ({ onClose }) => {
         className="login-register-card"
         initial="hidden"
         animate="visible"
-        variants={cardVariants}
+        variants={loginRegisterCardVariants}
       >
         <button onClick={onClose} className="close-btn">X</button>
-        <div className="card-content">
+        <div className="login-register-card-content">
           <h2>{isRegistering ? 'Register' : 'Login'}</h2>
           
           {/* Show error message if any */}
