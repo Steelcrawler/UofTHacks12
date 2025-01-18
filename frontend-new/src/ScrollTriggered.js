@@ -97,8 +97,8 @@ const splash = {
 
 const card = {
   fontSize: 164,
-  width: 900,
-  height: 330,
+  minWidth: 800,   
+  height: "auto",
   marginBottom: 120,
   display: "flex",
   justifyContent: "center",
