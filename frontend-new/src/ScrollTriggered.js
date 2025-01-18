@@ -6,14 +6,16 @@ export default function ScrollTriggered() {
   const [cards, setCards] = useState([food[0]]);
   const [index, setIndex] = useState(0);
 
-  const handleSubmit = () => {
-    setCards(prev => [...prev, food[index + 1]]);
-    setIndex(index + 1);
-  }
+  const handleAddCard = () => {
+    if (index + 1 < food.length) {
+      setCards((prev) => [...prev, food[index + 1]]);
+      setIndex(index + 1);
+    }
+  };
 
   return (
     <div style={container}>
-      <button onClick={handleSubmit}>Ugly temporary button</button>
+      <button onClick={handleAddCard}>Ugly temporary button</button>
       {/* Destructure text from the food array item */}
       {cards.map(([text, emoji, hueA, hueB], i) => (
         <Card 
@@ -23,21 +25,29 @@ export default function ScrollTriggered() {
           hueA={hueA} 
           hueB={hueB} 
           key={emoji} 
+          onSubmit={handleAddCard}
         />
       ))}
     </div>
   )
 }
 
-function Card({ text, emoji, hueA, hueB, i }) {
+function Card({ text, emoji, hueA, hueB, i, onSubmit }) {
   const background = `linear-gradient(306deg, ${hue(hueA)}, ${hue(hueB)})`
   const [inputText, setInputText] = useState("");
+
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
 
   const handleSubmit = () => {
-    alert(`Submitted: ${inputText}`); // Replace this with actual functionality if needed
+    if (inputText !== "") {
+      console.log(`Card ${i}: Submitted text - "${inputText}"`); // Debugging log
+      onSubmit(); // Trigger the addition of a new card
+      setInputText(""); // Clear the input field
+    } else {
+      alert("Please enter some text!");
+    }
   };
   return (
     <motion.div
