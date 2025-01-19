@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import React, { useState, useEffect } from 'react';
+// import { GoogleOAuthProvider } from '@react-oauth/google';
 import ScrollTriggered from './ScrollTriggered';
 import NavBar from './NavBar';
 import './App.css';
 import LoginRegisterWindow from './LoginRegisterWindow';
 import SideBar from './SideBar';
+import axios from 'axios';
 
-const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
+// const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
 
 function App() {
   const [showLoginWindow, setShowLoginWindow] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const checkSession = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:5000/api/check_session', { withCredentials: true });
+      if (response.data.logged_in) {
+        setUser(response.data.user);
+      }
+    } catch (error) {
+      console.error('Error checking session:', error);
+    }
+  }
 
   const toggleLoginWindow = (e) => {
     if (e) e.preventDefault();
@@ -28,20 +45,34 @@ function App() {
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://127.0.0.1:5000/api/logout', {}, { withCredentials: true });
+      setUser(null);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
   
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    // <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <div className="App">
         <NavBar 
           onLoginClick={toggleLoginWindow} 
           onToggleSidebar={toggleSidebar} 
+          user={user} 
+          onLogout={handleLogout}
         />
         
         <main className="main-content">
-          <ScrollTriggered />
+          <ScrollTriggered 
+          user={user} 
+          />
           
           {showLoginWindow && (
             <LoginRegisterWindow 
+              onLoginSuccess={setUser}
               onClose={closeLoginWindow} 
             />
           )}
@@ -54,7 +85,7 @@ function App() {
           )}
         </main>
       </div>
-    </GoogleOAuthProvider>
+    // </GoogleOAuthProvider>
   );
 }
 

@@ -6,7 +6,7 @@ import vertexai
 from vertexai.preview import rag
 from vertexai.preview.generative_models import GenerativeModel, Tool, ChatSession, SafetySetting, HarmCategory, HarmBlockThreshold
 from pathlib import Path
-import fitz 
+# import fitz
 from google.cloud import storage
 
 class RAGChatbot:
