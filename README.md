@@ -17,7 +17,6 @@ Our platform helps break echo chambers by exposing users to well-researched, div
 ### Frontend
 - **React 18**: Core framework for building our user interface
 - **Framer Motion**: Advanced animations and transitions
-- **TailwindCSS**: Utility-first styling
 - **Chrome Extension API**: Browser integration
 
 ### Backend
@@ -40,6 +39,9 @@ Our platform is built on three core principles:
 1. **Transparency**: All data sources are openly available and verifiable
 2. **Accessibility**: Complex topics are presented in understandable formats
 3. **Neutrality**: Balanced presentation of different viewpoints with clear source attribution
+
+## ⬇️ Installation Instructions
+
 
 ## 🎯 Future Enhancements
 - **Knowledge Base Expansion**: Add more topics and sources while maintaining quality standards
