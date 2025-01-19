@@ -4,6 +4,78 @@ import logo from './logo.png';
 import user from './user.svg';
 import submitButton from './submitButton.svg';
 
+function StreamingText({ text, delay, i }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isComplete, setIsComplete] = useState(false);
+  const containerRef = React.useRef(null);
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedText('');
+    setIsComplete(false);
+    let isMounted = true;
+
+    const streamText = async () => {
+      while (index < text.length && isMounted) {
+        await new Promise(resolve => setTimeout(resolve, 30));
+        if (isMounted) {
+          setDisplayedText(text.substring(0, index + 1));
+          index++;
+        }
+      }
+      if (isMounted) {
+        setIsComplete(true);
+      }
+    };
+
+    streamText();
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [text]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      // Smooth scroll to bottom
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [displayedText]);
+
+  return (
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: i * 0.2, duration: 0.5 }}
+      style={{
+        fontSize: "20px",
+        marginRight: "20px",
+        display: "inline-block",   
+        textAlign: "left",          
+        verticalAlign: "top",  
+        width: "500px",
+        padding: "30px",
+        maxHeight: "300px",
+        overflowY: "auto",
+        overflowX: "hidden",
+        scrollbarWidth: "thin",
+        scrollbarColor: "#888 #f5f5f5",
+        whiteSpace: "pre-wrap",  // Preserve formatting
+        wordBreak: "break-word"  // Prevent horizontal overflow
+      }}
+      className="streaming-text-container"
+    >
+      {displayedText}
+      {!isComplete && <span className="typing-cursor">▋</span>}
+    </motion.div>
+  );
+}
+
 function SkeletonCard() {
   return (
     <motion.div
@@ -105,33 +177,36 @@ function SkeletonCard() {
 }
 
 export default function ScrollTriggered() {
-  const [cards, setCards] = useState([food[0]]);
+  const [cards, setCards] = useState([conversation[0]]);
+  console.log("very start", conversation);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const handleAddCard = async () => {
-    if (index + 1 >= food.length) return;
+    // if (index + 1 >= conversation.length) return;
     
     setIsLoading(true);
     console.log('Setting loading to true'); // Debug log
     
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setCards(prev => [...prev, food[index + 1]]);
+    console.log("in handleAddCard,", conversation);
+    setCards(prev => [...prev, conversation[index + 1]]);
     setIndex(prev => prev + 1);
+    // conversation = conversation.concat([""]);
+    console.log("in handleAddCard, after concatenation,", conversation);
     setIsLoading(false);
     console.log('Setting loading to false'); // Debug log
   };
 
   useEffect(() => {
     // Automatically add another card if the last added card is even-indexed
-    if (index % 2 != 0 && index + 1 < food.length) {
+    if (index % 2 != 0 && index + 1 < conversation.length) {
       handleAddCard();
     }
   }, [index]);
   return (
     <div style={container}>
-      {/* Destructure text from the food array item */}
+      {/* Destructure text from the conversation array item */}
       {cards.map(([text], i) => (
         <Card 
           i={i} 
@@ -171,12 +246,17 @@ function Card({ text, i, onSubmit }) {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
+          console.log("response", response)
           return response.json();
         })
         .then((data) => {
           console.log("Successfully submitted:", data);
-  
+          console.log(conversation);
           // Update the state to reflect the submission
+          conversation[conversation.length - 1] = [inputText];
+          conversation = conversation.concat([[data.bot_response]]);
+          // conversation = conversation.concat([["..."]]);
+          console.log(conversation);
           setSubmittedText(inputText);
           onSubmit(); // Call the callback function if needed
           setInputText(""); // Clear the input
@@ -189,6 +269,13 @@ function Card({ text, i, onSubmit }) {
       alert("Please enter some text!");
     }
   };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
   
   return (
     <motion.div
@@ -198,8 +285,6 @@ function Card({ text, i, onSubmit }) {
       whileInView="onscreen"
       viewport={{ amount: 0.8 }}
     >
-      {/* <div style={{ ...splash, background }} /> */}
-      
       <div>
         {i % 2 !== 0 ? (
           <motion.div style={iconContainer} className="iconRightContainer">
@@ -225,22 +310,8 @@ function Card({ text, i, onSubmit }) {
       </div>
       <motion.div style={card} variants={cardVariants} className="card">
         {i % 2 !== 0 ? (
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2, duration: 0.5 }}
-            style={{
-              fontSize: "20px",
-              marginRight: "20px",
-              display: "inline-block",   
-              textAlign: "left",          
-              verticalAlign: "top",  
-              width: "500px",
-              padding: "30px",
-            }}
-          >
-            {text} {/* Odd-indexed cards directly show text */}
-          </motion.span>
+          // Bot response - uses StreamingText
+          <StreamingText text={text} i={i} />
         ) : (
           !submittedText ? (
             <div 
@@ -252,6 +323,7 @@ function Card({ text, i, onSubmit }) {
               <textarea
                 value={inputText}
                 onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Enter text"
                 style={{
                   width: "300px", // Fixed width
@@ -286,25 +358,10 @@ function Card({ text, i, onSubmit }) {
                 onClick={handleSubmit}
               />
             </div>
-            ): (
-              // After submission, show the submitted text
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.2, duration: 0.5 }}
-                style={{
-                  fontSize: "20px",
-                  marginRight: "20px",
-                  display: "inline-block",   
-                  textAlign: "left",          
-                  verticalAlign: "top",  
-                  width: "500px",  
-                  padding: "30px", 
-                }}
-              >
-                {submittedText} {/* Display the submitted text */}
-              </motion.span>
-            )
+          ) : (
+            // User submitted text - uses StreamingText
+            <StreamingText text={submittedText} i={i} />
+          )
         )}
       </motion.div>
       <div>
@@ -331,8 +388,41 @@ function Card({ text, i, onSubmit }) {
         )}
       </div>
     </motion.div>
-  )
+  );
 }
+
+const inputContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  width: '80%',
+  padding: '20px',
+};
+
+const textareaStyle = {
+  width: '100%',
+  minHeight: '100px',
+  padding: '12px',
+  fontSize: '16px',
+  borderRadius: '8px',
+  border: '1px solid #ccc',
+  resize: 'vertical',
+  fontFamily: 'inherit',
+};
+
+const submitButtonStyle = {
+  padding: '12px 24px',
+  fontSize: '16px',
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s',
+  ':hover': {
+    backgroundColor: '#45a049',
+  },
+};
 
 const cardVariants = {
   offscreen: {
@@ -438,13 +528,43 @@ const iconWhite = {
   alignItems: "center",
 }
 
-const food = [
-  ["Fresh"],
-  ["and"],
-  ["Tasty"],
-  ["Fruits"],
-  ["For"],
-  ["Your"],
-  ["Health"],
-  ["Today"],
-]
+let conversation = [
+  [""],
+];
+
+const cssStyles = `
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    animation: blink 1s infinite;
+    margin-left: 4px;
+  }
+
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  .streaming-text-container::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .streaming-text-container::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = cssStyles;
+document.head.appendChild(styleSheet);
