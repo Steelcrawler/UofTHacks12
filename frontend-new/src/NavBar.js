@@ -3,7 +3,7 @@ import './NavBar.css';
 import logo from './logo.png'; // necessary?
 import three_lines from './three_lines.svg';
 
-const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout }) => {
+const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout, onStartNewChat }) => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
@@ -12,7 +12,7 @@ const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout }) => {
       </div>
       <ul className="navbar-links">
         <li><a href="#about">About</a></li>
-        <li><a href="#chat">Save, Close & Start New Chat</a></li>
+        <li><a onClick={onStartNewChat}>Start New Chat</a></li>
         <li>{user ? (
         <>
           <span>Welcome, {user}</span>

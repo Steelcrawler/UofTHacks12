@@ -45,6 +45,7 @@ function App() {
   };
 
   const handleLogout = async () => {
+    alert("Your messages will not be saved after looging out.");
     try {
       await axios.post('http://127.0.0.1:5000/api/logout', {}, { withCredentials: true });
       setUser(null);
@@ -52,10 +53,17 @@ function App() {
       console.error('Error logging out:', error);
     }
   };
+
+  const handleStartNewChat = async () => {
+    if (user === null) {
+      alert("You're not logged in, and your chat is not saved.");
+    }
+    // ... create new chat api
+  }
   
   return (
     <div className="App">
-      <NavBar onLoginClick={toggleLoginWindow} onToggleSidebar={toggleSidebar} user={user} onLogout={handleLogout} />
+      <NavBar onLoginClick={toggleLoginWindow} onToggleSidebar={toggleSidebar} user={user} onLogout={handleLogout} onStartNewChat={handleStartNewChat} />
       <ScrollTriggered user={user} />
       {showLoginWindow && <LoginRegisterWindow onLoginSuccess={setUser} onClose={closeLoginWindow} />}
       {isSidebarOpen && <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />}
