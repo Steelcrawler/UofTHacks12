@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import logo from './logo.png';
-import person from './user.svg';
+import user from './user.svg';
 import submitButton from './submitButton.svg';
 import axios from 'axios';
 
@@ -177,39 +177,11 @@ function SkeletonCard() {
   );
 }
 
-export default function ScrollTriggered(user) {
+export default function ScrollTriggered() {
   const [cards, setCards] = useState([conversation[0]]);
-  const [chatId, setchatId] = useState(null);
   console.log("very start", conversation);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  if (user !== null) {
-    // axios.post('http://127.0.0.1:5000/api/create_new_chat', { userEmail: user.email }).then(response => {setchatId(response. chatId)})
-    const userData = { userEmail: user };
-    fetch("http://127.0.0.1:5000/api/create_new_chat", {
-      method: "POST",
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        console.log("response", response)
-        return response.json();
-      })
-      .then((data) => {
-        setchatId(data.chatId);
-      })
-      .catch((error) => {
-        console.error("Error creating chat:", error);
-      });
-  }
-
   const handleAddCard1 = async () => {
     // if (index + 1 >= conversation.length) return;
     
@@ -260,7 +232,6 @@ export default function ScrollTriggered(user) {
           key={i} 
           onSubmit={handleAddCard1}
           user={user}
-          chatId={chatId}
         />
       ))}
       {isLoading && <SkeletonCard />}
@@ -268,7 +239,7 @@ export default function ScrollTriggered(user) {
   );
 }
 
-function Card({ text, i, onSubmit, user, chatId }) {
+function Card({ text, i, onSubmit }) {
   const [inputText, setInputText] = useState("");
   const [submittedText, setSubmittedText] = useState("");
 
@@ -276,10 +247,6 @@ function Card({ text, i, onSubmit, user, chatId }) {
     setInputText(e.target.value);
   };
   const handleSubmit = () => {
-    console.log(user);
-    if (user === null && i == 0) {
-      alert("You're not logged in. Your messages will not be saved unless you log in.");
-    }
     if (inputText.trim() !== "") {
       // Create the JSON object
       const data = {
@@ -308,22 +275,6 @@ function Card({ text, i, onSubmit, user, chatId }) {
           // Update the state to reflect the submission
           conversation[conversation.length - 1] = [inputText];
           conversation = conversation.concat([[data.bot_response]]);
-
-          if (user !== null) {
-            axios.post('http://127.0.0.1:5000/api/save_chat', {
-              userEmail: user,
-              chatId: chatId,
-              message1: inputText,
-              message2: data.bot_response,
-            }).then(response => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              console.log("response", response)
-            }
-            )
-          }
-
           // conversation = conversation.concat([["..."]]);
           console.log(conversation);
           setSubmittedText(inputText);
@@ -578,7 +529,7 @@ const iconRight = {
   height: 50,
   margin: 30,
   backgroundColor: "#add8e6",
-  backgroundImage: `url(${person})`,
+  backgroundImage: `url(${user})`,
   backgroundSize: "cover", // Ensure the image covers the entire element
   backgroundRepeat: "no-repeat", // Prevent repeating
   backgroundPosition: "center",

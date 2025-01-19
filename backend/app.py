@@ -4,7 +4,6 @@ from mongodb_interface import MongoDBInterface
 from gcp.gcpchatbotintegrated import ChatSessionManager
 from flask_session import Session
 import os
-import uuid
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)  # Generate a random secret key
@@ -58,47 +57,6 @@ def check_session():
     else:
         return jsonify({"logged_in": False}), 200
 
-@app.route('/api/save_chat', methods=['POST'])
-def save_chat():
-    data = request.get_json()
-    if not 'data' or 'userEmail' not in data  \
-        or 'chatId' not in data or 'message1' not in data or 'message2' not in data:
-        return jsonify({"error": "Invalid request. UserEmail/chatId/message1/message2 are all required."}), 400
-
-    user_email = data['userEmail']
-    chat_id = data['chatId']
-    message1 = data['message1']
-    message2 = data['message2']
-
-    success1 = mongo_interface.add_message_to_chat(user_email, chat_id, message1)
-    success2 = mongo_interface.add_message_to_chat(user_email, chat_id, message2)
-
-    if success1 and success2:
-        return jsonify({"message": "2 pieces of chat successfully saved"}), 200
-    else:
-        return jsonify({"error": "Chat not saved"}), 200
-
-@app.route('/api/create_new_chat', methods=['POST'])
-def create_new_chat():
-    data = request.get_json()
-    if not data or 'userEmail' not in data:
-        return jsonify({"error": "Invalid request. User email is required."}), 400
-
-    user_email = data['userEmail']
-
-    # Generate a random chat ID
-    chat_id = str(uuid.uuid4())
-
-    # Create a new chat using the MongoDB interface
-    success = mongo_interface.create_new_chat(user_email, chat_id)
-
-    if success:
-        return jsonify({
-            "message": "New chat created successfully",
-            "chatId": chat_id
-        }), 201
-    else:
-        return jsonify({"error": "Failed to create new chat"}), 500
 @app.route('/')
 def home():
     return "Hello, Flask!"
