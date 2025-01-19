@@ -12,7 +12,7 @@ const SideBar = ({ isOpen, onClose }) => {
           <li>Chat 3: Goodbye</li>
         </ul>
       </div>
-      <button className="close-btn" onClick={onClose}>Close</button>
+      <span className="close-btn" onClick={onClose}>×</span>
     </div>
   );
 };
