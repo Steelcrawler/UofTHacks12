@@ -181,7 +181,24 @@ export default function ScrollTriggered() {
   console.log("very start", conversation);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const handleAddCard = async () => {
+  const handleAddCard1 = async () => {
+    // if (index + 1 >= conversation.length) return;
+    
+    setIsLoading(true);
+    console.log('Setting loading to true'); // Debug log
+    
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    console.log("in handleAddCard,", conversation);
+    setCards(prev => [...prev, conversation[index + 1]]);
+    setIndex(prev => prev + 1);
+    conversation = conversation.concat([[""]]);
+    console.log("in handleAddCard, after concatenation,", conversation);
+    setIsLoading(false);
+    console.log('Setting loading to false'); // Debug log
+  };
+
+  const handleAddCard2 = async () => {
     // if (index + 1 >= conversation.length) return;
     
     setIsLoading(true);
@@ -201,7 +218,7 @@ export default function ScrollTriggered() {
   useEffect(() => {
     // Automatically add another card if the last added card is even-indexed
     if (index % 2 != 0 && index + 1 < conversation.length) {
-      handleAddCard();
+      handleAddCard2();
     }
   }, [index]);
   return (
@@ -212,7 +229,7 @@ export default function ScrollTriggered() {
           i={i} 
           text={text}
           key={i} 
-          onSubmit={handleAddCard}
+          onSubmit={handleAddCard1}
         />
       ))}
       {isLoading && <SkeletonCard />}
@@ -251,7 +268,7 @@ function Card({ text, i, onSubmit }) {
         })
         .then((data) => {
           console.log("Successfully submitted:", data);
-          console.log(conversation);
+          // console.log(conversation);
           // Update the state to reflect the submission
           conversation[conversation.length - 1] = [inputText];
           conversation = conversation.concat([[data.bot_response]]);
