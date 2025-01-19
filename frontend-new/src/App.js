@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ScrollTriggered from './ScrollTriggered'
+import ExtensionWrapper from './ExtensionWrapper';
 import NavBar from './NavBar';
 import './App.css';
 import LoginRegisterWindow from './LoginRegisterWindow';
@@ -11,7 +12,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleLoginWindow = (e) => {
-    e.preventDefault(); // Prevent the default anchor link behavior
+    e.preventDefault();
     setShowLoginWindow(!showLoginWindow);
   };
 
@@ -34,7 +35,7 @@ function App() {
       {showLoginWindow && <LoginRegisterWindow onClose={closeLoginWindow} />}
       {isSidebarOpen && <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
