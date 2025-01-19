@@ -52,12 +52,10 @@ def handle_submission():
     submitted_text = data['submittedText']
     print(f"Received text: {submitted_text}")
 
-    try:
-        # Pass the input to the chatbot and get the response
-        bot_response = session_manager.send_message(submitted_text)
-        return jsonify({"message": "Submission successful", "botResponse": bot_response}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 50
+    bot_response = session_manager.send_message(submitted_text)
+    
+    return jsonify({"message": "Submission successful", "receivedText": submitted_text, "bot_response": bot_response}), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)

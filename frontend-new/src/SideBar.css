@@ -1,0 +1,46 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden off-screen to the left */
+    width: 250px;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    overflow-y: auto;
+    transition: left 0.3s ease;  /* Smooth transition for sliding */
+    padding-top: 60px;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    left: 0;  /* Slide in when 'open' class is applied */
+  }
+  
+  .sidebar-content {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 16px 0;
+  }
+  
+  .sidebar .close-btn {
+    font-size: 36px; /* Large cross */
+    color: white;
+    position: absolute;
+    top: 10px;
+    left: -180px;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .sidebar .close-btn:hover {
+    color: #f44336; /* Hover effect for the cross */
+  }
+  
