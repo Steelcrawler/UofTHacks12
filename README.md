@@ -42,6 +42,39 @@ Our platform is built on three core principles:
 
 ## ⬇️ Installation Instructions
 
+1. Clone the repository and navigate to the frontend directory:
+   ```bash
+   cd frontend-new/
+   ```
+
+2. Install the necessary Node.js dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Build the frontend application:
+
+   ```bash
+   npm run build
+   ```
+
+4. Navigate to the backend directory:
+
+   ```bash
+   cd ../backend
+   ```
+
+5. Install the required Python dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. Start the backend application:
+
+   ```bash
+   python app.py
 
 ## 🎯 Future Enhancements
 - **Knowledge Base Expansion**: Add more topics and sources while maintaining quality standards
