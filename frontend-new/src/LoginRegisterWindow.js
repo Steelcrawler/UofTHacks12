@@ -18,7 +18,7 @@ const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/google-login', {
+      const response = await axios.post('/api/google-login', {
         credential: credentialResponse.credential
       });
       
@@ -47,8 +47,8 @@ const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
 
     if (email && password) {
         const url = isRegistering
-          ? 'http://127.0.0.1:5000/api/register'
-          : 'http://127.0.0.1:5000/api/login';
+          ? '/api/register'
+          : '/api/login';
 
         axios.post(url, { email, password })
         .then((response) => {
