@@ -1,26 +1,34 @@
-from flask import Flask, request, jsonify, session
-from flask_cors import CORS
+from flask import Flask, request, jsonify, session, send_from_directory
 from mongodb_interface import MongoDBInterface
 from gcp.gcpchatbotintegrated import ChatSessionManager
-from flask_session import Session
 import os
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)  # Generate a random secret key
-app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
+# Initialize Flask app
+app = Flask(__name__, 
+    static_folder='../frontend-new/build/static',
+    template_folder='../frontend-new/build')
 
-CORS(app, supports_credentials=True)
+
+# Initialize interfaces
 mongo_interface = MongoDBInterface()
 session_manager = ChatSessionManager()
 
+# Serve React App
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.template_folder, 'index.html')
+
+# API Routes
 @app.route('/api/register', methods=['POST'])
 def register_user():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
 
-    # Call create_user method to register the user
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
 
@@ -29,14 +37,12 @@ def register_user():
     else:
         return jsonify({"message": "Email already exists or invalid email"}), 400
 
-
 @app.route('/api/login', methods=['POST'])
 def login_user():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
 
-    # Call verify_user method to check credentials
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
 
@@ -44,7 +50,7 @@ def login_user():
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"message": "Invalid email or password"}), 401
-    
+
 @app.route('/api/google-login', methods=['POST'])
 def google_login():
     data = request.get_json()
@@ -70,10 +76,7 @@ def check_session():
     else:
         return jsonify({"logged_in": False}), 200
 
-@app.route('/')
-def home():
-    return "Hello, Flask!"
-@app.route('/endpointj', methods=['POST'])
+@app.route('/api/chat', methods=['POST'])
 def handle_submission():
     data = request.get_json()
 
@@ -85,8 +88,11 @@ def handle_submission():
 
     bot_response = session_manager.send_message(submitted_text)
     print(bot_response)
-    return jsonify({"message": "Submission successful", "receivedText": submitted_text, "bot_response": bot_response}), 200
-
+    return jsonify({
+        "message": "Submission successful", 
+        "receivedText": submitted_text, 
+        "bot_response": bot_response
+    }), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

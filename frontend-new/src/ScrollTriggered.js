@@ -254,13 +254,12 @@ function Card({ text, i, onSubmit }) {
       };
   
       // Send the JSON object to the Flask endpoint
-      fetch("http://127.0.0.1:5000/endpointj", {
-        method: "POST",
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      fetch("/api/chat", {  // Changed from /endpointj to /api/chat to match our new endpoint
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
       })
         .then((response) => {
           if (!response.ok) {

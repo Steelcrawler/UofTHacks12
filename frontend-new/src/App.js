@@ -27,7 +27,7 @@ function App() {
 
   const checkSession = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/check_session', { withCredentials: true });
+      const response = await axios.get('/api/check_session');
       if (response.data.logged_in) {
         setUser(response.data.user);
       }
@@ -66,7 +66,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://127.0.0.1:5000/api/logout', {}, { withCredentials: true });
+      await axios.post('/api/logout');
       setUser(null);
     } catch (error) {
       console.error('Error logging out:', error);
@@ -86,7 +86,7 @@ function App() {
         
         <main className="main-content">
           <ScrollTriggered 
-          user={user} 
+            user={user} 
           />
           
           {showLoginWindow && (
