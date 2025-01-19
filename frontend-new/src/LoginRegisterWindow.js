@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
-const LoginRegisterWindow = ({ onClose }) => {
+const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,14 +32,17 @@ const LoginRegisterWindow = ({ onClose }) => {
         .then((response) => {
           if (response.status === 200) {
             console.log('Form submitted:', { email, password });
-            onClose(); // Close the modal on successful submission
+            if (!isRegistering) {
+              onLoginSuccess(email);
+            }
+            onClose();
           } else {
             setError(response.data.message);  // Display error message from backend
           }
         })
         .catch((error) => {
           console.error('Error submitting form:', error);
-          setError('Something went wrong');  // Display a generic error message
+          setError(error.response?.data?.message || 'Something went wrong');  // Display a generic error message
         });
     }
   };

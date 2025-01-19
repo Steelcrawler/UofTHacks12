@@ -1,10 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from mongodb_interface import MongoDBInterface
 from gcp.gcpchatbotintegrated import ChatSessionManager
+from flask_session import Session
+import os
 
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = os.urandom(24)  # Generate a random secret key
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+
+CORS(app, supports_credentials=True)
 mongo_interface = MongoDBInterface()
 session_manager = ChatSessionManager()
 
@@ -39,6 +45,18 @@ def login_user():
     else:
         return jsonify({"message": "Invalid email or password"}), 401
 
+@app.route('/api/logout', methods=['POST'])
+def logout_user():
+    session.pop('user', None)
+    return jsonify({"message": "Logout successful"}), 200
+
+@app.route('/api/check_session', methods=['GET'])
+def check_session():
+    if 'user' in session:
+        return jsonify({"logged_in": True, "user": session['user']}), 200
+    else:
+        return jsonify({"logged_in": False}), 200
+
 @app.route('/')
 def home():
     return "Hello, Flask!"
@@ -53,7 +71,7 @@ def handle_submission():
     print(f"Received text: {submitted_text}")
 
     bot_response = session_manager.send_message(submitted_text)
-    
+    print(bot_response)
     return jsonify({"message": "Submission successful", "receivedText": submitted_text, "bot_response": bot_response}), 200
 
 

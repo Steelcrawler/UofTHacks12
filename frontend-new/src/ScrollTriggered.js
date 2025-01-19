@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import logo from './logo.png';
 import user from './user.svg';
 import submitButton from './submitButton.svg';
+import axios from 'axios';
 
 function StreamingText({ text, delay, i }) {
   const [displayedText, setDisplayedText] = useState('');
@@ -230,6 +231,7 @@ export default function ScrollTriggered() {
           text={text}
           key={i} 
           onSubmit={handleAddCard1}
+          user={user}
         />
       ))}
       {isLoading && <SkeletonCard />}
@@ -254,6 +256,7 @@ function Card({ text, i, onSubmit }) {
       // Send the JSON object to the Flask endpoint
       fetch("http://127.0.0.1:5000/endpointj", {
         method: "POST",
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
@@ -280,7 +283,11 @@ function Card({ text, i, onSubmit }) {
         })
         .catch((error) => {
           console.error("Error submitting data:", error);
-          alert("Failed to submit. Please try again.");
+          if (error.response && error.response.status === 401) {
+            alert("Please log in to submit.");
+          } else {
+            alert("Failed to submit. Please try again.");
+          }
         });
     } else {
       alert("Please enter some text!");
