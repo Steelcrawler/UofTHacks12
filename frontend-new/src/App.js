@@ -4,13 +4,20 @@ import ScrollTriggered from './ScrollTriggered';
 import NavBar from './NavBar';
 import './App.css';
 import LoginRegisterWindow from './LoginRegisterWindow';
+
+import About from './About';
+
 import SideBar from './SideBar';
 import axios from 'axios';
+
 
 // const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
 
 function App() {
   const [showLoginWindow, setShowLoginWindow] = useState(false);
+
+  const [showAboutWindow, setShowAboutWindow] = useState(true);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -29,6 +36,7 @@ function App() {
     }
   }
 
+
   const toggleLoginWindow = (e) => {
     if (e) e.preventDefault();
     setShowLoginWindow(!showLoginWindow);
@@ -38,6 +46,16 @@ function App() {
     setShowLoginWindow(false);
   };
 
+
+  const toggleAboutWindow = (e) => {
+    e.preventDefault(); // Prevent the default anchor link behavior
+    setShowAboutWindow(!showAboutWindow);
+  };
+
+  const closeAboutWindow = () => {
+    setShowAboutWindow(false);
+  };
+       
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -60,6 +78,7 @@ function App() {
       <div className="App">
         <NavBar 
           onLoginClick={toggleLoginWindow} 
+          onAboutClick={toggleAboutWindow}
           onToggleSidebar={toggleSidebar} 
           user={user} 
           onLogout={handleLogout}
@@ -83,10 +102,12 @@ function App() {
               onClose={closeSidebar} 
             />
           )}
+          {showAboutWindow && <About onClose={closeAboutWindow} />}
         </main>
       </div>
     // </GoogleOAuthProvider>
   );
+
 }
 
 export default App;

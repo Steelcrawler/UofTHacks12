@@ -3,7 +3,9 @@ import './NavBar.css';
 import logo from './logo.png'; // necessary?
 import three_lines from './three_lines.svg';
 
-const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout }) => {
+
+const NavBar = ({ onLoginClick, onAboutClick, onToggleSidebar, user, onLogout }) => {
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
@@ -11,7 +13,8 @@ const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout }) => {
         <img src={logo} className="navbar-logo-img" alt="logo" />
       </div>
       <ul className="navbar-links">
-        <li><a href="#about">About</a></li>
+
+        <li><a onClick={onAboutClick}>About</a></li>
         {/* <li><a href="#chat">Save, Close & Start New Chat</a></li> */}
         <li>{user ? (
         <>
@@ -21,6 +24,7 @@ const NavBar = ({ onLoginClick, onToggleSidebar, user, onLogout }) => {
       ) : (
         <a onClick={onLoginClick}>Login/Register</a>
       )}</li>
+
       </ul>
     </nav>
   );
