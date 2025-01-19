@@ -192,7 +192,7 @@ export default function ScrollTriggered() {
     console.log("in handleAddCard,", conversation);
     setCards(prev => [...prev, conversation[index + 1]]);
     setIndex(prev => prev + 1);
-    conversation = conversation.concat([""]);
+    // conversation = conversation.concat([""]);
     console.log("in handleAddCard, after concatenation,", conversation);
     setIsLoading(false);
     console.log('Setting loading to false'); // Debug log
@@ -254,8 +254,8 @@ function Card({ text, i, onSubmit }) {
           console.log(conversation);
           // Update the state to reflect the submission
           conversation[conversation.length - 1] = [inputText];
-          // conversation = conversation.concat([[data.bot_response]]);
-          conversation = conversation.concat([["..."]]);
+          conversation = conversation.concat([[data.bot_response]]);
+          // conversation = conversation.concat([["..."]]);
           console.log(conversation);
           setSubmittedText(inputText);
           onSubmit(); // Call the callback function if needed

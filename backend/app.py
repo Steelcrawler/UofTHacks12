@@ -9,7 +9,7 @@ CORS(app)
 
 # Initialize MongoDBInterface
 mongo_interface = MongoDBInterface()
-# session_manager = ChatSessionManager()
+session_manager = ChatSessionManager()
 
 @app.route('/api/register', methods=['POST'])
 def register_user():
@@ -55,9 +55,9 @@ def handle_submission():
     submitted_text = data['submittedText']
     
     print(f"Received text: {submitted_text}")
-    # bot_response = session_manager.send_message(submitted_text)
+    bot_response = session_manager.send_message(submitted_text)
     
-    return jsonify({"message": "Submission successful", "receivedText": submitted_text}), 200
+    return jsonify({"message": "Submission successful", "receivedText": submitted_text, "bot_response": bot_response}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
