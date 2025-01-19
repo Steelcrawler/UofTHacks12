@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "The Other Side",
+  "version": "1.0",
+  "description": "A chatbot allowing constructuve debate on political views opposing yours.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab"
+  ]
+}
