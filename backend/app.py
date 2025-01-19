@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from mongodb_interface import MongoDBInterface
-from gcp.gcpchatbotintegrated import ChatSessionManager
 
 app = Flask(__name__)
 CORS(app)
@@ -9,7 +8,6 @@ CORS(app)
 
 # Initialize MongoDBInterface
 mongo_interface = MongoDBInterface()
-# session_manager = ChatSessionManager()
 
 @app.route('/api/register', methods=['POST'])
 def register_user():
@@ -55,7 +53,6 @@ def handle_submission():
     submitted_text = data['submittedText']
     
     print(f"Received text: {submitted_text}")
-    # bot_response = session_manager.send_message(submitted_text)
     
     return jsonify({"message": "Submission successful", "receivedText": submitted_text}), 200
 

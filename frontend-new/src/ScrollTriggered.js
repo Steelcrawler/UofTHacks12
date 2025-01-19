@@ -178,22 +178,19 @@ function SkeletonCard() {
 
 export default function ScrollTriggered() {
   const [cards, setCards] = useState([conversation[0]]);
-  console.log("very start", conversation);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const handleAddCard = async () => {
-    // if (index + 1 >= conversation.length) return;
+    if (index + 1 >= conversation.length) return;
     
     setIsLoading(true);
     console.log('Setting loading to true'); // Debug log
     
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("in handleAddCard,", conversation);
+    
     setCards(prev => [...prev, conversation[index + 1]]);
     setIndex(prev => prev + 1);
-    conversation = conversation.concat([""]);
-    console.log("in handleAddCard, after concatenation,", conversation);
     setIsLoading(false);
     console.log('Setting loading to false'); // Debug log
   };
@@ -246,17 +243,12 @@ function Card({ text, i, onSubmit }) {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
-          console.log("response", response)
           return response.json();
         })
         .then((data) => {
           console.log("Successfully submitted:", data);
-          console.log(conversation);
+  
           // Update the state to reflect the submission
-          conversation[conversation.length - 1] = [inputText];
-          // conversation = conversation.concat([[data.bot_response]]);
-          conversation = conversation.concat([["..."]]);
-          console.log(conversation);
           setSubmittedText(inputText);
           onSubmit(); // Call the callback function if needed
           setInputText(""); // Clear the input
@@ -528,8 +520,11 @@ const iconWhite = {
   alignItems: "center",
 }
 
-let conversation = [
-  [""],
+const conversation = [
+  ["Hello! I am an AI assistant ready to help you with your questions. I can provide detailed explanations and engage in meaningful discussions about various topics."],
+  ["Thank you for your message. Let me provide a comprehensive response that will demonstrate the scrolling functionality. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."],
+  ["I understand your question completely. Let me break it down into several key points and provide a detailed analysis. First, we should consider the fundamental aspects of the topic. Then, we can explore its practical applications and implications. This requires a thorough examination of various factors and their interrelationships..."],
+  ["Excellent point! Let me elaborate on that with some concrete examples and detailed explanations..."],
 ];
 
 const cssStyles = `
