@@ -30,7 +30,7 @@ class MongoDBInterface:
         self.client = pymongo.MongoClient(
             MONGODB_CONNECTION_STRING,
             tlsCAFile=certifi.where(),
-            serverSelectionTimeoutMS=5000
+            serverSelectionTimeoutMS=30000
         )
         
         # Test the connection
