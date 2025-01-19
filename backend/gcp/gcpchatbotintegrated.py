@@ -6,6 +6,8 @@ import vertexai
 from vertexai.preview import rag
 from vertexai.preview.generative_models import GenerativeModel, Tool, ChatSession, SafetySetting, HarmCategory, HarmBlockThreshold
 from pathlib import Path
+import fitz 
+from google.cloud import storage
 
 class RAGChatbot:
     def __init__(self):
@@ -77,6 +79,44 @@ class RAGChatbot:
             print(f"Error in stance analysis: {e}")
             return "neutral", "general"
 
+    # def setup_rag_corpus(self, subject: str, stance: str) -> Optional[str]:
+    #     """Set up the RAG corpus with document embeddings"""
+    #     try:
+    #         print(f"Setting up RAG corpus for {stance} {subject}...")
+            
+    #         # Create embedding model configuration
+    #         embedding_model_config = rag.EmbeddingModelConfig(
+    #             publisher_model=self.embedding_model
+    #         )
+            
+    #         # Create corpus
+    #         corpus = rag.create_corpus(
+    #             display_name=f"cli-rag-corpus-{subject}-{stance}".lower(),
+    #             embedding_model_config=embedding_model_config
+    #         )
+            
+    #         # Construct paths
+    #         subject_path = os.path.join(self.base_bucket, subject.lower())
+    #         stance_bucket = os.path.join(subject_path, stance.lower())
+    #         neutral_bucket = os.path.join(subject_path, "neutral")
+            
+    #         print(f"Importing documents from: {[stance_bucket, neutral_bucket]}")
+            
+    #         # Import documents from GCS buckets
+    #         rag.import_files(
+    #             corpus_name=corpus.name,
+    #             paths=[stance_bucket, neutral_bucket],
+    #             chunk_size=1024,
+    #             chunk_overlap=100,
+    #             max_embedding_requests_per_min=900,
+    #         )
+            
+    #         return corpus.name
+            
+    #     except Exception as e:
+    #         print(f"Error setting up RAG corpus: {e}")
+    #         return None
+
     def setup_rag_corpus(self, subject: str, stance: str) -> Optional[str]:
         """Set up the RAG corpus with document embeddings"""
         try:
@@ -100,17 +140,26 @@ class RAGChatbot:
             
             print(f"Importing documents from: {[stance_bucket, neutral_bucket]}")
             
-            # Import documents from GCS buckets
-            rag.import_files(
-                corpus_name=corpus.name,
-                paths=[stance_bucket, neutral_bucket],
-                chunk_size=1024,
-                chunk_overlap=100,
-                max_embedding_requests_per_min=900,
-            )
+            # Process PDFs from GCS buckets
+            for bucket_path in [stance_bucket, neutral_bucket]:
+                bucket_name, prefix = bucket_path.split("/", 1)
+                storage_client = storage.Client()
+                blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
+                
+                for blob in blobs:
+                    if blob.name.endswith(".pdf"):
+                        text = download_and_extract_text(bucket_name, blob.name)
+                        embeddings = create_embeddings(text, self.embedding_model)
+                        
+                        # Add the embeddings to the corpus
+                        rag.add_document_to_corpus(
+                            corpus_name=corpus.name,
+                            document_text=text,
+                            document_embedding=embeddings
+                        )
             
             return corpus.name
-            
+        
         except Exception as e:
             print(f"Error setting up RAG corpus: {e}")
             return None
@@ -241,7 +290,8 @@ if __name__ == "__main__":
                 print(response)
                 break
             else:
-                print(f"\nBot: {response}")
+                continue
+                # print(f"\nBot: {response}")
 
     except KeyboardInterrupt:
         print("\n\nChat session interrupted. Goodbye!")
