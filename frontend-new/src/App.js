@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+// import { GoogleOAuthProvider } from '@react-oauth/google';
 import ScrollTriggered from './ScrollTriggered';
 import NavBar from './NavBar';
 import './App.css';
@@ -7,7 +7,7 @@ import LoginRegisterWindow from './LoginRegisterWindow';
 import SideBar from './SideBar';
 import axios from 'axios';
 
-const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
+// const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
 
 function App() {
   const [showLoginWindow, setShowLoginWindow] = useState(false);
@@ -56,7 +56,7 @@ function App() {
   };
   
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    // <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <div className="App">
         <NavBar 
           onLoginClick={toggleLoginWindow} 
@@ -66,7 +66,9 @@ function App() {
         />
         
         <main className="main-content">
-          <ScrollTriggered user={user} />
+          <ScrollTriggered 
+          user={user} 
+          />
           
           {showLoginWindow && (
             <LoginRegisterWindow 
@@ -83,7 +85,7 @@ function App() {
           )}
         </main>
       </div>
-    </GoogleOAuthProvider>
+    // </GoogleOAuthProvider>
   );
 }
 

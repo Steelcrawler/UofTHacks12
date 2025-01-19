@@ -1,7 +1,7 @@
 import './LoginRegisterWindow.css';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useGoogleLogin, GoogleLogin } from '@react-oauth/google';
+// import { useGoogleLogin, GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
 const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
@@ -23,13 +23,14 @@ const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
       });
       
       if (response.status === 200) {
-        console.log('Google login successful');
+        console.log('Google login successful', response);
+        onLoginSuccess(response.data.email)
         onClose();
       }
-    } catch (error) {
-      console.error('Error during Google login:', error);
-      setError('Something went wrong during Google login');
-    }
+      } catch (error) {
+        console.error('Error during Google login:', error);
+        setError('Something went wrong during Google login');
+      }
   };
 
   const handleGoogleError = () => {
@@ -45,7 +46,6 @@ const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
     }
 
     if (email && password) {
-      try {
         const url = isRegistering
           ? 'http://127.0.0.1:5000/api/register'
           : 'http://127.0.0.1:5000/api/login';
@@ -132,13 +132,13 @@ const LoginRegisterWindow = ({ onClose, onLoginSuccess }) => {
             </button>
           </form>
 
-          <div className="google-signin-button">
+          {/* <div className="google-signin-button">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
               useOneTap
             />
-          </div>
+          </div> */}
 
           <div className="toggle-register">
             {isRegistering ? (
