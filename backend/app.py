@@ -44,6 +44,19 @@ def login_user():
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"message": "Invalid email or password"}), 401
+    
+@app.route('/api/google-login', methods=['POST'])
+def google_login():
+    data = request.get_json()
+    token = data.get('token')
+
+    if not token:
+        return jsonify({"message": "Token is required"}), 400
+
+    if mongo_interface.google_login(token):
+        return jsonify({"message": "Google login successful"}), 200
+    else:
+        return jsonify({"message": "Invalid token"}), 401
 
 @app.route('/api/logout', methods=['POST'])
 def logout_user():
@@ -76,4 +89,4 @@ def handle_submission():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
