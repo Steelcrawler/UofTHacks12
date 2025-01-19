@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import ScrollTriggered from './ScrollTriggered'
-import ExtensionWrapper from './ExtensionWrapper';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import ScrollTriggered from './ScrollTriggered';
 import NavBar from './NavBar';
 import './App.css';
 import LoginRegisterWindow from './LoginRegisterWindow';
 import SideBar from './SideBar';
 
+const GOOGLE_CLIENT_ID = "711241449544-os41uo4q7u566gfq2hs577sof224tost.apps.googleusercontent.com";
 
 function App() {
   const [showLoginWindow, setShowLoginWindow] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleLoginWindow = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setShowLoginWindow(!showLoginWindow);
   };
 
@@ -21,20 +22,39 @@ function App() {
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);  // Toggle the sidebar state
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const closeSidebar = () => {
-    setIsSidebarOpen(false);  // Close the sidebar
+    setIsSidebarOpen(false);
   };
   
   return (
-    <div className="App">
-      <NavBar onLoginClick={toggleLoginWindow} onToggleSidebar={toggleSidebar} />
-      <ScrollTriggered />
-      {showLoginWindow && <LoginRegisterWindow onClose={closeLoginWindow} />}
-      {isSidebarOpen && <SideBar isOpen={isSidebarOpen} onClose={closeSidebar} />}
-    </div>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <div className="App">
+        <NavBar 
+          onLoginClick={toggleLoginWindow} 
+          onToggleSidebar={toggleSidebar} 
+        />
+        
+        <main className="main-content">
+          <ScrollTriggered />
+          
+          {showLoginWindow && (
+            <LoginRegisterWindow 
+              onClose={closeLoginWindow} 
+            />
+          )}
+          
+          {isSidebarOpen && (
+            <SideBar 
+              isOpen={isSidebarOpen} 
+              onClose={closeSidebar} 
+            />
+          )}
+        </main>
+      </div>
+    </GoogleOAuthProvider>
   );
 }
 

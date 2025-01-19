@@ -1,6 +1,7 @@
 import './LoginRegisterWindow.css';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useGoogleLogin, GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 
 const LoginRegisterWindow = ({ onClose }) => {
@@ -15,7 +16,27 @@ const LoginRegisterWindow = ({ onClose }) => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const handleSubmit =  (e) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/api/google-login', {
+        credential: credentialResponse.credential
+      });
+      
+      if (response.status === 200) {
+        console.log('Google login successful');
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error during Google login:', error);
+      setError('Something went wrong during Google login');
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login failed');
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isRegistering && password !== confirmPassword) {
@@ -24,23 +45,21 @@ const LoginRegisterWindow = ({ onClose }) => {
     }
 
     if (email && password) {
-      const url = isRegistering
-        ? 'http://127.0.0.1:5000/api/register'  // Register endpoint
-        : 'http://127.0.0.1:5000/api/login';    // Login endpoint
+      try {
+        const url = isRegistering
+          ? 'http://127.0.0.1:5000/api/register'
+          : 'http://127.0.0.1:5000/api/login';
 
-        axios.post(url, { email, password })
-        .then((response) => {
-          if (response.status === 200) {
-            console.log('Form submitted:', { email, password });
-            onClose(); // Close the modal on successful submission
-          } else {
-            setError(response.data.message);  // Display error message from backend
-          }
-        })
-        .catch((error) => {
-          console.error('Error submitting form:', error);
-          setError('Something went wrong');  // Display a generic error message
-        });
+        const response = await axios.post(url, { email, password });
+        
+        if (response.status === 200) {
+          console.log('Form submitted successfully');
+          onClose();
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setError(error.response?.data?.message || 'Something went wrong');
+      }
     }
   };
 
@@ -61,7 +80,6 @@ const LoginRegisterWindow = ({ onClose }) => {
         <div className="login-register-card-content">
           <h2>{isRegistering ? 'Register' : 'Login'}</h2>
           
-          {/* Show error message if any */}
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit}>
@@ -108,7 +126,14 @@ const LoginRegisterWindow = ({ onClose }) => {
             </button>
           </form>
 
-          {/* First time user section */}
+          <div className="google-signin-button">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap
+            />
+          </div>
+
           <div className="toggle-register">
             {isRegistering ? (
               <p>Already have an account? <span onClick={() => setIsRegistering(false)} className="toggle-link">Login here</span></p>
