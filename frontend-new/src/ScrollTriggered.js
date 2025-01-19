@@ -177,11 +177,11 @@ function SkeletonCard() {
 }
 
 export default function ScrollTriggered() {
-  const [cards, setCards] = useState([food[0]]);
+  const [cards, setCards] = useState([conversation[0]]);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const handleAddCard = async () => {
-    if (index + 1 >= food.length) return;
+    if (index + 1 >= conversation.length) return;
     
     setIsLoading(true);
     console.log('Setting loading to true'); // Debug log
@@ -189,7 +189,7 @@ export default function ScrollTriggered() {
     // Simulate loading delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    setCards(prev => [...prev, food[index + 1]]);
+    setCards(prev => [...prev, conversation[index + 1]]);
     setIndex(prev => prev + 1);
     setIsLoading(false);
     console.log('Setting loading to false'); // Debug log
@@ -197,13 +197,13 @@ export default function ScrollTriggered() {
 
   useEffect(() => {
     // Automatically add another card if the last added card is even-indexed
-    if (index % 2 != 0 && index + 1 < food.length) {
+    if (index % 2 != 0 && index + 1 < conversation.length) {
       handleAddCard();
     }
   }, [index]);
   return (
     <div style={container}>
-      {/* Destructure text from the food array item */}
+      {/* Destructure text from the conversation array item */}
       {cards.map(([text], i) => (
         <Card 
           i={i} 
@@ -520,7 +520,7 @@ const iconWhite = {
   alignItems: "center",
 }
 
-const food = [
+const conversation = [
   ["Hello! I am an AI assistant ready to help you with your questions. I can provide detailed explanations and engage in meaningful discussions about various topics."],
   ["Thank you for your message. Let me provide a comprehensive response that will demonstrate the scrolling functionality. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."],
   ["I understand your question completely. Let me break it down into several key points and provide a detailed analysis. First, we should consider the fundamental aspects of the topic. Then, we can explore its practical applications and implications. This requires a thorough examination of various factors and their interrelationships..."],
