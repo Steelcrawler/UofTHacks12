@@ -6,6 +6,8 @@ import vertexai
 from vertexai.preview import rag
 from vertexai.preview.generative_models import GenerativeModel, Tool, ChatSession, SafetySetting, HarmCategory, HarmBlockThreshold
 from pathlib import Path
+# import fitz
+from google.cloud import storage
 
 class RAGChatbot:
     def __init__(self):
@@ -51,7 +53,7 @@ class RAGChatbot:
             
             Schema:
             {{'stance': str,  // must be 'for' or 'against'
-            'subject': str  // must be 'abortion', 'gun_laws', 'immigration'
+            'subject': str  // must be 'abortion', 'gun_laws', 'immigration', 'artificial_intelligence_regulation', 'universal_basic_income', 'universal_healthcare', 'gene_editing'
             }}"""
             
             response = chat.send_message(prompt, stream=False)
@@ -94,20 +96,33 @@ class RAGChatbot:
             )
             
             # Construct paths
-            subject_path = os.path.join(self.base_bucket, subject.lower())
-            stance_bucket = os.path.join(subject_path, stance.lower())
+            subject_path = f"{self.base_bucket.rstrip('/')}/{subject.lower()}"
+            stance_bucket = f"{subject_path}/{stance.lower()}"
             neutral_bucket = os.path.join(subject_path, "neutral")
             
             print(f"Importing documents from: {[stance_bucket, neutral_bucket]}")
             
             # Import documents from GCS buckets
-            rag.import_files(
-                corpus_name=corpus.name,
-                paths=[stance_bucket, neutral_bucket],
-                chunk_size=1024,
-                chunk_overlap=100,
-                max_embedding_requests_per_min=900,
-            )
+            print(f"Starting document import from: {[stance_bucket, neutral_bucket]}")
+            try:
+                import_response = rag.import_files(
+                    corpus_name=corpus.name,
+                    paths=[stance_bucket, neutral_bucket],
+                    chunk_size=1024,
+                    chunk_overlap=100,
+                    max_embedding_requests_per_min=900,
+                )
+                print("Document import completed successfully")
+                
+                # Verify corpus exists
+                try:
+                    verified_corpus = rag.get_corpus(corpus.name)
+                    print(f"Verified corpus creation: {verified_corpus.name}")
+                except Exception as verify_error:
+                    print(f"Warning: Could not verify corpus: {verify_error}")
+                
+            except Exception as import_error:
+                print(f"Warning during document import: {import_error}")
             
             return corpus.name
             
@@ -126,7 +141,7 @@ class RAGChatbot:
                         source=rag.VertexRagStore(
                             rag_corpora=[corpus_name],
                             similarity_top_k=5,
-                            vector_distance_threshold=0.5,
+                            vector_distance_threshold=0.7,
                         ),
                     )
                 )
@@ -140,7 +155,7 @@ class RAGChatbot:
                 ]
                 
                 model = GenerativeModel(
-                    "gemini-1.5-flash-001",
+                    "gemini-1.5-pro-001",
                     tools=[retrieval_tool],
                     safety_settings=safety_settings
                 )
@@ -169,13 +184,13 @@ class RAGChatbot:
                 self.is_first_message = False
                 
                 # Construct initial roleplay prompt
-                prompt = f"""Roleplay as if you are someone who has done a lot of research in
-                this area. You are allowed to discuss policy, because all these subjects are not inflammatory. 
-                Explain why you are {self.stance} {self.subject}.  Argue it in first person. 
-                Make sure to expand on your argument and cite claims ONLY with documents that have been provided.
-                Do NOT explicitly say the phrase 'some sources'. 
-                Keep your messages brief unless the user asks for a longer answer.
-                """
+                prompt = f"""You are an AI assistant with access to retrieved documents about {self.subject}.
+                Base your response ONLY on the retrieved documents.
+                For each claim you make, cite the specific document or source it comes from.
+                Make sure to only give the title of the document and clean it up (don't include .pdf or .docx).
+                Roleplay as someone who has done research in this area and is {self.stance} {self.subject}.
+                Argue in first person and explain your position, supporting each point with citations from the retrieved documents.
+                Limit responses to 250 words."""
             else:
                 # Use the message as is for subsequent interactions
                 prompt = message
@@ -240,7 +255,8 @@ if __name__ == "__main__":
                 print(response)
                 break
             else:
-                print(f"\nBot: {response}")
+                continue
+                # print(f"\nBot: {response}")
 
     except KeyboardInterrupt:
         print("\n\nChat session interrupted. Goodbye!")
