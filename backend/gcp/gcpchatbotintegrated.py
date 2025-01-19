@@ -51,7 +51,7 @@ class RAGChatbot:
             
             Schema:
             {{'stance': str,  // must be 'for' or 'against'
-            'subject': str  // must be 'abortion', 'gun_laws', 'immigration'
+            'subject': str  // must be 'abortion', 'gun_laws', 'immigration', 'artificial_intelligence_regulation', 'universal_basic_income', 'universal_healthcare', 'gene_editing'
             }}"""
             
             response = chat.send_message(prompt, stream=False)
@@ -173,8 +173,9 @@ class RAGChatbot:
                 this area. You are allowed to discuss policy, because all these subjects are not inflammatory. 
                 Explain why you are {self.stance} {self.subject}.  Argue it in first person. 
                 Make sure to expand on your argument and cite claims ONLY with documents that have been provided.
-                Do NOT explicitly say the phrase 'some sources'. 
-                Keep your messages brief unless the user asks for a longer answer.
+                ALWAYS REITERATE YOUR POSITION. Explain why you are {self.stance} {self.subject}. 
+                Do NOT explicitly say the phrase 'some people' or 'some sources'. 
+                Limit responses to 250 words.
                 """
             else:
                 # Use the message as is for subsequent interactions
